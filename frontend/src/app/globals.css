@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* Dark theme (default) */
+:root,
+.dark {
+  --background: #0b0d12;
+  --foreground: #e8eaef;
+  --surface: #141820;
+  --surface-hover: #1a2030;
+  --border: #2a3142;
+  --accent: #c9a227;
+  --accent-hover: #dbb84a;
+  --accent-foreground: #0b0d12;
+  --muted: #8b93a7;
+  --danger: #e85d5d;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --strength-weak: var(--danger);
+  --strength-medium: var(--warning);
+  --strength-strong: var(--success);
+  --input-bg: var(--surface);
+}
+
+/* Light theme (ready for toggle) */
+.light {
+  --background: #f4f5f8;
+  --foreground: #12141a;
+  --surface: #ffffff;
+  --surface-hover: #eef0f5;
+  --border: #d5dae6;
+  --accent: #a67c00;
+  --accent-hover: #c9a227;
+  --accent-foreground: #ffffff;
+  --muted: #5c6478;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+  --strength-weak: var(--danger);
+  --strength-medium: var(--warning);
+  --strength-strong: var(--success);
+  --input-bg: var(--surface);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-strength-weak: var(--strength-weak);
+  --color-strength-medium: var(--strength-medium);
+  --color-strength-strong: var(--strength-strong);
+  --color-input-bg: var(--input-bg);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
