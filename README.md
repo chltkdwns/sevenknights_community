@@ -124,3 +124,10 @@ npm run dev
 3. 아이디/비밀번호 찾기 API
 4. 댓글 도메인 및 API
 5. Refresh Token / HttpOnly Cookie 검토
+
+
+백엔드 실행
+.\gradlew.bat bootRun
+
+프론트엔드 실행
+npm run dev
