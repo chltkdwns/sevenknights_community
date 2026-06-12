@@ -21,6 +21,19 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * 캐릭터별 스킬 마스터.
+ * <p>
+ * 스킬을 GameCharacter에 JSON/임베디드로 넣지 않고 별도 Entity로 둔 이유:
+ * <ul>
+ *   <li>공격 가이드의 스킬 순서(gw_skill_steps)가 {@code skill_id} FK로 특정 스킬을 가리켜야
+ *       쿨타임·이미지·설명 변경 시 가이드 데이터를 일괄 갱신할 수 있다.</li>
+ *   <li>캐릭터당 1·2스킬·각성은 고정 슬롯({@link SkillType})이므로
+ *       (character_id, skill_type) 유니크로 중복 등록을 막는다.</li>
+ *   <li>추후 점수표/계산기에서 스킬 단위 배율·쿨타임을 붙일 때
+ *       스킬 row를 확장 지점으로 쓸 수 있다.</li>
+ * </ul>
+ */
 @Entity
 @Table(
         name = "skills",

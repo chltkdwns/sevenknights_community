@@ -1,0 +1,56 @@
+package com.sevenknights.community.domain.guildwar.attack;
+
+import com.sevenknights.community.domain.guildwar.character.GameCharacter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/**
+ * 상대 방어팀 구성원. 캐릭터 ID만이 아니라 {@code slotOrder}로 전열 위치를 보존한다.
+ * 길드전은 좌·중·우 배치가 전략에 영향을 주므로, 정렬 가능한 목록이 아닌 슬롯 번호를 쓴다.
+ */
+@Entity
+@Table(
+        name = "gw_enemy_team_members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_gw_enemy_team_members_team_slot",
+                columnNames = {"enemy_team_id", "slot_order"}
+        )
+)
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class GuildWarEnemyTeamMember {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "enemy_team_id", nullable = false)
+    private GuildWarEnemyTeam enemyTeam;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "character_id", nullable = false)
+    private GameCharacter character;
+
+    @Column(nullable = false)
+    private int slotOrder;
+
+    @Builder
+    public GuildWarEnemyTeamMember(GuildWarEnemyTeam enemyTeam, GameCharacter character, int slotOrder) {
+        this.enemyTeam = enemyTeam;
+        this.character = character;
+        this.slotOrder = slotOrder;
+    }
+}

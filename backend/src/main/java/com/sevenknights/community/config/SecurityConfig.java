@@ -68,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 길드전 가이드 공개 조회 — isPublished 필터는 서비스·리포지토리에서 적용
+                        .requestMatchers(HttpMethod.GET, "/api/guild-war/**").permitAll()
                         // 조회는 공개, 쓰기/수정/삭제는 로그인 필요
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/posts/**").authenticated()

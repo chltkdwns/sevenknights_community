@@ -20,6 +20,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 길드전 가이드 전역에서 참조하는 캐릭터 마스터.
+ * <p>
+ * 공격 가이드(상대팀·추천 공격팀)와 방어 가이드가 동일한 캐릭터 풀을 쓰므로
+ * 가이드별로 캐릭터 정보를 복제하지 않고 FK로 묶는다.
+ * 캐릭터명·이미지가 바뀌면 한 곳만 수정해도 모든 가이드 UI에 반영된다.
+ */
 @Entity
 @Table(name = "characters")
 @Getter
