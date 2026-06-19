@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ public class EnemyTeamAdminService {
     private final GuildWarEnemyTeamRepository enemyTeamRepository;
     private final GameCharacterRepository gameCharacterRepository;
     private final SkillRepository skillRepository;
+    private final EntityManager entityManager;
 
     @Transactional
     public Long save(EnemyTeamUpsertRequest request) {
@@ -74,7 +77,7 @@ public class EnemyTeamAdminService {
     public Long update(Long id, EnemyTeamUpsertRequest request) {
         validateRequest(request);
 
-        GuildWarEnemyTeam team = enemyTeamRepository.findById(id)
+        GuildWarEnemyTeam team = enemyTeamRepository.findByIdWithMembers(id)
                 .orElseThrow(() -> new NotFoundException("상대 방어팀을 찾을 수 없습니다."));
 
         Map<Long, GameCharacter> characterMap = loadCharacters(collectCharacterIds(request));
@@ -91,8 +94,10 @@ public class EnemyTeamAdminService {
 
         // Aggregate 루트만 유지하고 하위는 전부 제거 후 재생성.
         // recommendations.clear() 시 attackTeamMembers·skillSteps도 cascade orphanRemoval로 삭제된다.
-        team.getMembers().clear();
         team.getRecommendations().clear();
+        team.getMembers().clear();
+        // UK(enemy_team_id, slot_order) 등 제약 때문에 DELETE가 INSERT보다 먼저 DB에 반영되어야 한다.
+        entityManager.flush();
 
         applyMembers(team, request.members(), characterMap);
         applyRecommendations(team, request.recommendations(), characterMap, skillMap);

@@ -31,4 +31,9 @@ public class AdminService {
     public void deletePost(Long id) {
         postService.deletePostByAdmin(id);
     }
+
+    @Transactional
+    public PostSummaryResponse updatePostVisibility(Long id, boolean hidden) {
+        return postService.updateVisibilityByAdmin(id, hidden);
+    }
 }

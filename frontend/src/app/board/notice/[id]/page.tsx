@@ -107,7 +107,7 @@ export default function NoticeDetailPage() {
 
       {canEdit ? (
         <div className="mt-4 flex gap-2">
-          <Link href={`/board/notice/${post.id}/edit`}>
+          <Link href={`/admin/community/notices/${post.id}/edit`}>
             <Button variant="secondary">수정</Button>
           </Link>
           <Button variant="danger" onClick={handleDelete} disabled={deleting}>

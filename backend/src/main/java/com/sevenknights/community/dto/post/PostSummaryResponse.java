@@ -11,7 +11,8 @@ public record PostSummaryResponse(
         BoardType boardType,
         long viewCount,
         String authorNickname,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean hidden
 ) {
     public static PostSummaryResponse from(Post post) {
         return new PostSummaryResponse(
@@ -20,7 +21,8 @@ public record PostSummaryResponse(
                 post.getBoardType(),
                 post.getViewCount(),
                 post.getAuthor().getNickname(),
-                post.getCreatedAt()
+                post.getCreatedAt(),
+                post.isHidden()
         );
     }
 }

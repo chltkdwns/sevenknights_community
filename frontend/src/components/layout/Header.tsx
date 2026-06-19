@@ -1,41 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { clearAuth, getAuthChangedEventName, getStoredUser } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { clearAuth } from "@/lib/auth";
+import { isAdminRoute } from "@/lib/admin-routes";
 import { GUIDE_NAV, isNavActive } from "@/lib/navigation";
-import type { User } from "@/types";
 
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const syncUser = () => {
-      setUser(getStoredUser());
-    };
-
-    syncUser();
-
-    const authEventName = getAuthChangedEventName();
-    window.addEventListener("storage", syncUser);
-    window.addEventListener(authEventName, syncUser);
-
-    return () => {
-      window.removeEventListener("storage", syncUser);
-      window.removeEventListener(authEventName, syncUser);
-    };
-  }, []);
+  const { user } = useAuth();
 
   const handleLogout = () => {
     clearAuth();
-    setUser(null);
     router.push("/");
     router.refresh();
   };
+
+  const onAdminRoute = isAdminRoute(pathname);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
@@ -69,9 +53,18 @@ export function Header() {
           {user ? (
             <>
               {user.role === "ADMIN" ? (
-                <Link href="/admin" className="text-accent hover:text-accent-hover">
-                  관리자
-                </Link>
+                onAdminRoute ? (
+                  <Link
+                    href="/"
+                    className="font-medium text-accent hover:text-accent-hover"
+                  >
+                    사이트로 돌아가기
+                  </Link>
+                ) : (
+                  <Link href="/admin" className="text-accent hover:text-accent-hover">
+                    관리자
+                  </Link>
+                )
               ) : null}
               <span className="hidden text-muted sm:inline">
                 {user.nickname}님

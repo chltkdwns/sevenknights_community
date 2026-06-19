@@ -23,6 +23,7 @@ export interface PostSummary {
   viewCount: number;
   authorNickname: string;
   createdAt: string;
+  hidden?: boolean;
 }
 
 export interface PostDetail extends PostSummary {

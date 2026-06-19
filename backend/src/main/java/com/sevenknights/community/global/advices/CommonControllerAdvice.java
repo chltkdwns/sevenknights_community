@@ -53,7 +53,7 @@ public class CommonControllerAdvice {
                     ? commonException.getMessage()
                     : commonException.getErrorMessages();
         } else if (e instanceof AuthorizationDeniedException) {
-            status = HttpStatus.UNAUTHORIZED;
+            status = HttpStatus.FORBIDDEN;
             messages = "권한이 없습니다.";
         }
 

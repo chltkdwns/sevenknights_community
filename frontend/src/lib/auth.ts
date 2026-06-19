@@ -45,7 +45,8 @@ export function isLoggedIn(): boolean {
 
 export function isAdminUser(): boolean {
   const user = getStoredUser();
-  return !!user && user.role === "ADMIN";
+  const token = getToken();
+  return !!token && !!user && user.role === "ADMIN";
 }
 
 export function getAuthChangedEventName(): string {

@@ -58,7 +58,7 @@ export default function NoticeBoardPage() {
           <p className="text-sm text-muted">Guests and users can read notices.</p>
         </div>
         {user?.role === "ADMIN" ? (
-          <Link href="/board/notice/new">
+          <Link href="/admin/community/notices/new">
             <Button>Write Notice</Button>
           </Link>
         ) : null}

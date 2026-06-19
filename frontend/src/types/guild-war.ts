@@ -48,3 +48,55 @@ export interface EnemyTeamDetail {
   members: TeamMember[];
   recommendations: AttackRecommendation[];
 }
+
+export interface SkillAdmin {
+  id: number;
+  skillType: SkillType;
+  name: string;
+  imageUrl: string | null;
+  sortOrder: number;
+}
+
+export interface GameCharacterAdmin {
+  id: number;
+  name: string;
+  imageUrl: string;
+  skills: SkillAdmin[];
+}
+
+export interface EnemyTeamMemberUpsert {
+  characterId: number;
+  slotOrder: number;
+}
+
+export interface AttackTeamMemberUpsert {
+  characterId: number;
+  slotOrder: number;
+}
+
+export interface SkillStepUpsert {
+  stepOrder: number;
+  skillId: number;
+  note: string | null;
+}
+
+export interface AttackRecommendationUpsert {
+  title: string | null;
+  description: string | null;
+  sortOrder: number;
+  petName: string | null;
+  petImageUrl: string | null;
+  attackTeamMembers: AttackTeamMemberUpsert[];
+  skillSteps: SkillStepUpsert[];
+}
+
+export interface EnemyTeamUpsertRequest {
+  title: string;
+  memo: string | null;
+  sortOrder: number;
+  isPublished: boolean;
+  petName: string | null;
+  petImageUrl: string | null;
+  members: EnemyTeamMemberUpsert[];
+  recommendations: AttackRecommendationUpsert[];
+}

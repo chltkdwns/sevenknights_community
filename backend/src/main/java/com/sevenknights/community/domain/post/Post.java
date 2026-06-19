@@ -48,6 +48,10 @@ public class Post {
     // 상세 조회 API 호출 시 증가하는 조회수
     private long viewCount;
 
+    /** 관리자 숨김 처리 — true이면 공개 목록·상세에서 제외 */
+    @Column(nullable = false)
+    private boolean hidden = false;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     // 게시글 작성자(회원)와의 연관관계
@@ -80,5 +84,9 @@ public class Post {
 
     public void increaseViewCount() {
         this.viewCount++;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 }

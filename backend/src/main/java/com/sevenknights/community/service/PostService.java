@@ -45,7 +45,7 @@ public class PostService {
         // DB 페이징 결과를 API 응답용 PageResponse로 변환
         Pageable pageable = PageRequest.of(page, size);
         Page<PostSummaryResponse> result = postRepository
-                .findByBoardTypeOrderByCreatedAtDesc(boardType, pageable)
+                .findByBoardTypeAndHiddenFalseOrderByCreatedAtDesc(boardType, pageable)
                 .map(PostSummaryResponse::from);
         return PageResponse.from(result);
     }
@@ -53,7 +53,7 @@ public class PostService {
     @Transactional
     public PostDetailResponse getPost(Long id) {
         // 게시글 상세 조회 시 조회수를 즉시 1 증가시킨다.
-        Post post = findPost(id);
+        Post post = findVisiblePost(id);
         post.increaseViewCount();
         List<PostImage> images = postImageRepository.findByPostIdOrderBySortOrderAsc(post.getId());
         return PostDetailResponse.from(post, images);
@@ -116,21 +116,39 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @Transactional
+    public PostSummaryResponse updateVisibilityByAdmin(Long id, boolean hidden) {
+        Post post = findPost(id);
+        post.setHidden(hidden);
+        return PostSummaryResponse.from(post);
+    }
+
     private Post findPost(Long id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
     }
 
+    private Post findVisiblePost(Long id) {
+        Post post = findPost(id);
+        if (post.isHidden()) {
+            throw new NotFoundException("게시글을 찾을 수 없습니다.");
+        }
+        return post;
+    }
+
     private void validateOwnerOrAdmin(Post post) {
         CustomUserDetails currentUser = getCurrentUser();
         boolean isAdmin = currentUser.getRole() == Role.ADMIN;
-        if (post.getBoardType() == BoardType.NOTICE && !isAdmin) {
-            throw new ForbiddenException("공지사항은 관리자만 수정/삭제할 수 있습니다.");
+
+        if (post.getBoardType() == BoardType.NOTICE) {
+            if (!isAdmin) {
+                throw new ForbiddenException("공지사항은 관리자만 수정/삭제할 수 있습니다.");
+            }
+            return;
         }
 
         boolean isOwner = post.getAuthor().getId().equals(currentUser.getId());
-
-        if (!isOwner && !isAdmin) {
+        if (!isOwner) {
             throw new ForbiddenException("게시글을 수정/삭제할 권한이 없습니다.");
         }
     }

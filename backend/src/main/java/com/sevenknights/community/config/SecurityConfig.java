@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -67,14 +68,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // AntPath로 고정 — MvcRequestMatcher는 핸들러 미등록 시 /api/admin/** 가 누락될 수 있다.
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
                         // 길드전 가이드 공개 조회 — isPublished 필터는 서비스·리포지토리에서 적용
                         .requestMatchers(HttpMethod.GET, "/api/guild-war/**").permitAll()
-                        // 조회는 공개, 쓰기/수정/삭제는 로그인 필요
-                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/posts/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
+                        // /api/admin/posts/** 와 분리하기 위해 /api/posts/** 만 AntPath로 한정
+                        .requestMatchers(new AntPathRequestMatcher("/api/posts/**", "GET")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/posts/**", "POST")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/posts/**", "PUT")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/posts/**", "DELETE")).authenticated()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))

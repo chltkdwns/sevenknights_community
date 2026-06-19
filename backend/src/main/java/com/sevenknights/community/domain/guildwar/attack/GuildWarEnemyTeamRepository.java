@@ -74,5 +74,12 @@ public interface GuildWarEnemyTeamRepository extends JpaRepository<GuildWarEnemy
 
     Optional<GuildWarEnemyTeam> findPublishedByIdWithMembers(@Param("id") Long id);
 
+    @Query("""
+            SELECT t FROM GuildWarEnemyTeam t
+            LEFT JOIN FETCH t.members
+            WHERE t.id = :id
+            """)
+    Optional<GuildWarEnemyTeam> findByIdWithMembers(@Param("id") Long id);
+
 }
 

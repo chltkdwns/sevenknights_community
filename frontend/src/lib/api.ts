@@ -32,12 +32,14 @@ export async function apiRequest<T>(
         "Content-Type": "application/json",
       };
 
+  let sentToken: string | null = null;
   if (auth) {
-    // 인증이 필요한 요청은 저장된 JWT를 Authorization 헤더에 실어 보낸다.
     const token = getToken();
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
+    if (!token) {
+      throw new ApiRequestError(401, "로그인이 필요합니다.");
     }
+    sentToken = token;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const response = await fetch(`${API_BASE}${path}`, {
@@ -47,8 +49,8 @@ export async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    if (response.status === 401 && auth) {
-      // 토큰 만료/무효 시 로컬 인증정보를 정리해 재로그인을 유도
+    if (response.status === 401 && sentToken) {
+      // 토큰이 있었는데 거부된 경우에만 세션을 정리한다.
       clearAuth();
     }
     let message = "요청 처리 중 오류가 발생했습니다.";
