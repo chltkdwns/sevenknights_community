@@ -32,9 +32,9 @@ public interface GuildWarSkillStepRepository extends JpaRepository<GuildWarSkill
 
             SELECT ss FROM GuildWarSkillStep ss
 
-            JOIN FETCH ss.skill s
+            LEFT JOIN FETCH ss.skill s
 
-            JOIN FETCH s.character
+            LEFT JOIN FETCH s.character
 
             JOIN ss.recommendation r
 

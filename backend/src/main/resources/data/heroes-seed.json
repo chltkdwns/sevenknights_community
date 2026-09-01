@@ -1,0 +1,710 @@
+﻿[
+    {
+        "slug":  "karma",
+        "name":  "카르마",
+        "faction":  "four_lords_of_old",
+        "imageUrl":  "/images/heroes/four_lords_of_old/karma/karma.webp"
+    },
+    {
+        "slug":  "omok",
+        "name":  "오목",
+        "faction":  "night_crows",
+        "imageUrl":  "/images/heroes/night_crows/omok/omok.webp"
+    },
+    {
+        "slug":  "klahan",
+        "name":  "클라한",
+        "faction":  "hidden_masters",
+        "imageUrl":  "/images/heroes/hidden_masters/klahan/klahan.webp"
+    },
+    {
+        "slug":  "branze_bransel",
+        "name":  "브란즈\u0026브란셀",
+        "faction":  "dark_knights",
+        "imageUrl":  "/images/heroes/dark_knights/branze_bransel/branze_bransel.webp"
+    },
+    {
+        "slug":  "yu_shin",
+        "name":  "유신",
+        "faction":  "eastern_aisha",
+        "imageUrl":  "/images/heroes/eastern_aisha/yu_shin/yu_shin.webp"
+    },
+    {
+        "slug":  "ryan",
+        "name":  "라이언",
+        "faction":  "luminous_revolutionaries",
+        "imageUrl":  "/images/heroes/luminous_revolutionaries/ryan/ryan.webp"
+    },
+    {
+        "slug":  "snipper",
+        "name":  "스니퍼",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/snipper/snipper.webp"
+    },
+    {
+        "slug":  "taka",
+        "name":  "타카",
+        "faction":  "night_crows",
+        "imageUrl":  "/images/heroes/night_crows/taka/taka.webp"
+    },
+    {
+        "slug":  "guan_yu",
+        "name":  "관우",
+        "faction":  "heroes_of_three_kingdoms",
+        "imageUrl":  "/images/heroes/heroes_of_three_kingdoms/guan_yu/guan_yu.webp"
+    },
+    {
+        "slug":  "feng_yan",
+        "name":  "풍연",
+        "faction":  "western_aisha",
+        "imageUrl":  "/images/heroes/western_aisha/feng_yan/feng_yan.webp"
+    },
+    {
+        "slug":  "kyle",
+        "name":  "카일",
+        "faction":  "four_lords_of_old",
+        "imageUrl":  "/images/heroes/four_lords_of_old/kyle/kyle.webp"
+    },
+    {
+        "slug":  "jin",
+        "name":  "진",
+        "faction":  "moonlit_isle",
+        "imageUrl":  "/images/heroes/moonlit_isle/jin/jin.webp"
+    },
+    {
+        "slug":  "rachel",
+        "name":  "레이첼",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/rachel/rachel.webp"
+    },
+    {
+        "slug":  "mercure",
+        "name":  "멜키르",
+        "faction":  "dark_knights",
+        "imageUrl":  "/images/heroes/dark_knights/mercure/mercure.webp"
+    },
+    {
+        "slug":  "catty",
+        "name":  "캐티",
+        "faction":  "moonlit_isle",
+        "imageUrl":  "/images/heroes/moonlit_isle/catty/catty.webp"
+    },
+    {
+        "slug":  "bai_long",
+        "name":  "백룡",
+        "faction":  "western_aisha",
+        "imageUrl":  "/images/heroes/western_aisha/bai_long/bai_long.webp"
+    },
+    {
+        "slug":  "lania",
+        "name":  "라니아",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/lania/lania.webp"
+    },
+    {
+        "slug":  "ruri",
+        "name":  "루리",
+        "faction":  "holy_cross_crusaders",
+        "imageUrl":  "/images/heroes/holy_cross_crusaders/ruri/ruri.webp"
+    },
+    {
+        "slug":  "aragon",
+        "name":  "아라곤",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/aragon/aragon.webp"
+    },
+    {
+        "slug":  "alice",
+        "name":  "엘리스",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/alice/alice.webp"
+    },
+    {
+        "slug":  "reginleif",
+        "name":  "레긴레이프",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/reginleif/reginleif.webp"
+    },
+    {
+        "slug":  "noho",
+        "name":  "노호",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/noho/noho.webp"
+    },
+    {
+        "slug":  "sun_ran",
+        "name":  "선란",
+        "faction":  "guardian_of_the_boundary",
+        "imageUrl":  "/images/heroes/guardian_of_the_boundary/sun_ran/sun_ran.webp"
+    },
+    {
+        "slug":  "eileene",
+        "name":  "아일린",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/eileene/eileene.webp"
+    },
+    {
+        "slug":  "silvesta",
+        "name":  "실베스타",
+        "faction":  "unknown",
+        "imageUrl":  "/images/heroes/unknown/silvesta/silvesta.webp"
+    },
+    {
+        "slug":  "ling_ling",
+        "name":  "링링",
+        "faction":  "western_aisha",
+        "imageUrl":  "/images/heroes/western_aisha/ling_ling/ling_ling.webp"
+    },
+    {
+        "slug":  "rosie",
+        "name":  "로지",
+        "faction":  "seven_knights_of_old",
+        "imageUrl":  "/images/heroes/seven_knights_of_old/rosie/rosie.webp"
+    },
+    {
+        "slug":  "clemyth",
+        "name":  "클레미스",
+        "faction":  "pentagon",
+        "imageUrl":  "/images/heroes/pentagon/clemyth/clemyth.webp"
+    },
+    {
+        "slug":  "chancellor",
+        "name":  "챈슬러",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/chancellor/chancellor.webp"
+    },
+    {
+        "slug":  "li",
+        "name":  "리",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/li/li.webp"
+    },
+    {
+        "slug":  "sun_wukong",
+        "name":  "오공",
+        "faction":  "four_lords",
+        "imageUrl":  "/images/heroes/four_lords/sun_wukong/sun_wukong.webp"
+    },
+    {
+        "slug":  "biscuit",
+        "name":  "비스킷",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/biscuit/biscuit.webp"
+    },
+    {
+        "slug":  "may",
+        "name":  "메이",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/may/may.webp"
+    },
+    {
+        "slug":  "kris",
+        "name":  "크리스",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/kris/kris.webp"
+    },
+    {
+        "slug":  "nia",
+        "name":  "니아",
+        "faction":  "holy_cross_crusaders",
+        "imageUrl":  "/images/heroes/holy_cross_crusaders/nia/nia.webp"
+    },
+    {
+        "slug":  "ballista",
+        "name":  "발리스타",
+        "faction":  "shadow_clan",
+        "imageUrl":  "/images/heroes/shadow_clan/ballista/ballista.webp"
+    },
+    {
+        "slug":  "karon",
+        "name":  "카론",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/karon/karon.webp"
+    },
+    {
+        "slug":  "jave",
+        "name":  "제이브",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/jave/jave.webp"
+    },
+    {
+        "slug":  "gelidus",
+        "name":  "겔리두스",
+        "faction":  "seven_knights_of_old",
+        "imageUrl":  "/images/heroes/seven_knights_of_old/gelidus/gelidus.webp"
+    },
+    {
+        "slug":  "knox",
+        "name":  "녹스",
+        "faction":  "purgatory",
+        "imageUrl":  "/images/heroes/purgatory/knox/knox.webp"
+    },
+    {
+        "slug":  "orkah",
+        "name":  "오르카",
+        "faction":  "pentagon",
+        "imageUrl":  "/images/heroes/pentagon/orkah/orkah.webp"
+    },
+    {
+        "slug":  "rin",
+        "name":  "린",
+        "faction":  "four_lords",
+        "imageUrl":  "/images/heroes/four_lords/rin/rin.webp"
+    },
+    {
+        "slug":  "velika",
+        "name":  "벨리카",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/velika/velika.webp"
+    },
+    {
+        "slug":  "colt",
+        "name":  "콜트",
+        "faction":  "dark_knights",
+        "imageUrl":  "/images/heroes/dark_knights/colt/colt.webp"
+    },
+    {
+        "slug":  "yui",
+        "name":  "유이",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/yui/yui.webp"
+    },
+    {
+        "slug":  "milia",
+        "name":  "밀리아",
+        "faction":  "seven_knights_of_old",
+        "imageUrl":  "/images/heroes/seven_knights_of_old/milia/milia.webp"
+    },
+    {
+        "slug":  "ace",
+        "name":  "에이스",
+        "faction":  "four_lords",
+        "imageUrl":  "/images/heroes/four_lords/ace/ace.webp"
+    },
+    {
+        "slug":  "mist",
+        "name":  "미스트",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/mist/mist.webp"
+    },
+    {
+        "slug":  "trued",
+        "name":  "트루드",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/trued/trued.webp"
+    },
+    {
+        "slug":  "karin",
+        "name":  "카린",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/karin/karin.webp"
+    },
+    {
+        "slug":  "rei",
+        "name":  "레이",
+        "faction":  "moonlit_isle",
+        "imageUrl":  "/images/heroes/moonlit_isle/rei/rei.webp"
+    },
+    {
+        "slug":  "Dwaeo",
+        "name":  "돼오",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/Dwaeo/Dwaeo.webp"
+    },
+    {
+        "slug":  "hellenia",
+        "name":  "헬레니아",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/hellenia/hellenia.webp"
+    },
+    {
+        "slug":  "heavenia",
+        "name":  "헤브니아",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/heavenia/heavenia.webp"
+    },
+    {
+        "slug":  "aris",
+        "name":  "아리스",
+        "faction":  "pentagon",
+        "imageUrl":  "/images/heroes/pentagon/aris/aris.webp"
+    },
+    {
+        "slug":  "xiao",
+        "name":  "샤오",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/xiao/xiao.webp"
+    },
+    {
+        "slug":  "lu_bu",
+        "name":  "여포",
+        "faction":  "four_lords",
+        "imageUrl":  "/images/heroes/four_lords/lu_bu/lu_bu.webp"
+    },
+    {
+        "slug":  "orly",
+        "name":  "오를리",
+        "faction":  "night_crows",
+        "imageUrl":  "/images/heroes/night_crows/orly/orly.webp"
+    },
+    {
+        "slug":  "spike",
+        "name":  "스파이크",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/spike/spike.webp"
+    },
+    {
+        "slug":  "aquila",
+        "name":  "아킬라",
+        "faction":  "night_crows",
+        "imageUrl":  "/images/heroes/night_crows/aquila/aquila.webp"
+    },
+    {
+        "slug":  "yuri",
+        "name":  "유리",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/yuri/yuri.webp"
+    },
+    {
+        "slug":  "kagura",
+        "name":  "카구라",
+        "faction":  "hidden_masters",
+        "imageUrl":  "/images/heroes/hidden_masters/kagura/kagura.webp"
+    },
+    {
+        "slug":  "sera",
+        "name":  "세라",
+        "faction":  "shadow_clan",
+        "imageUrl":  "/images/heroes/shadow_clan/sera/sera.webp"
+    },
+    {
+        "slug":  "miho",
+        "name":  "미호",
+        "faction":  "hidden_masters",
+        "imageUrl":  "/images/heroes/hidden_masters/miho/miho.webp"
+    },
+    {
+        "slug":  "bi_dam",
+        "name":  "비담",
+        "faction":  "eastern_aisha",
+        "imageUrl":  "/images/heroes/eastern_aisha/bi_dam/bi_dam.webp"
+    },
+    {
+        "slug":  "daisy",
+        "name":  "데이지",
+        "faction":  "moonlit_isle",
+        "imageUrl":  "/images/heroes/moonlit_isle/daisy/daisy.webp"
+    },
+    {
+        "slug":  "juri",
+        "name":  "쥬리",
+        "faction":  "seven_knights_of_old",
+        "imageUrl":  "/images/heroes/seven_knights_of_old/juri/juri.webp"
+    },
+    {
+        "slug":  "rudy",
+        "name":  "루디",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/rudy/rudy.webp"
+    },
+    {
+        "slug":  "jane",
+        "name":  "제인",
+        "faction":  "shadow_clan",
+        "imageUrl":  "/images/heroes/shadow_clan/jane/jane.webp"
+    },
+    {
+        "slug":  "evan",
+        "name":  "에반",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/evan/evan.webp"
+    },
+    {
+        "slug":  "lucy",
+        "name":  "루시",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/lucy/lucy.webp"
+    },
+    {
+        "slug":  "ariel",
+        "name":  "아리엘",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/ariel/ariel.webp"
+    },
+    {
+        "slug":  "pascal",
+        "name":  "파스칼",
+        "faction":  "sanctuary_of_darkness",
+        "imageUrl":  "/images/heroes/sanctuary_of_darkness/pascal/pascal.webp"
+    },
+    {
+        "slug":  "elysia",
+        "name":  "엘리시아",
+        "faction":  "luminous_revolutionaries",
+        "imageUrl":  "/images/heroes/luminous_revolutionaries/elysia/elysia.webp"
+    },
+    {
+        "slug":  "jupy",
+        "name":  "쥬피",
+        "faction":  "evan_expedition",
+        "imageUrl":  "/images/heroes/evan_expedition/jupy/jupy.webp"
+    },
+    {
+        "slug":  "radgrid",
+        "name":  "라드그리드",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/radgrid/radgrid.webp"
+    },
+    {
+        "slug":  "fai",
+        "name":  "파이",
+        "faction":  "seven_knights_of_old",
+        "imageUrl":  "/images/heroes/seven_knights_of_old/fai/fai.webp"
+    },
+    {
+        "slug":  "shane",
+        "name":  "세인",
+        "faction":  "holy_cross_crusaders",
+        "imageUrl":  "/images/heroes/holy_cross_crusaders/shane/shane.webp"
+    },
+    {
+        "slug":  "sylvia",
+        "name":  "실비아",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/sylvia/sylvia.webp"
+    },
+    {
+        "slug":  "amelia",
+        "name":  "아멜리아",
+        "faction":  "hidden_masters",
+        "imageUrl":  "/images/heroes/hidden_masters/amelia/amelia.webp"
+    },
+    {
+        "slug":  "randgrid",
+        "name":  "란드그리드",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/randgrid/randgrid.webp"
+    },
+    {
+        "slug":  "dellons",
+        "name":  "델론즈",
+        "faction":  "dark_knights",
+        "imageUrl":  "/images/heroes/dark_knights/dellons/dellons.webp"
+    },
+    {
+        "slug":  "sieg",
+        "name":  "지크",
+        "faction":  "holy_cross_crusaders",
+        "imageUrl":  "/images/heroes/holy_cross_crusaders/sieg/sieg.webp"
+    },
+    {
+        "slug":  "diaochan",
+        "name":  "초선",
+        "faction":  "heroes_of_three_kingdoms",
+        "imageUrl":  "/images/heroes/heroes_of_three_kingdoms/diaochan/diaochan.webp"
+    },
+    {
+        "slug":  "asura",
+        "name":  "아수라",
+        "faction":  "sanctuary_of_darkness",
+        "imageUrl":  "/images/heroes/sanctuary_of_darkness/asura/asura.webp"
+    },
+    {
+        "slug":  "black_rose",
+        "name":  "블랙로즈",
+        "faction":  "shadow_clan",
+        "imageUrl":  "/images/heroes/shadow_clan/black_rose/black_rose.webp"
+    },
+    {
+        "slug":  "lina",
+        "name":  "리나",
+        "faction":  "moonlit_isle",
+        "imageUrl":  "/images/heroes/moonlit_isle/lina/lina.webp"
+    },
+    {
+        "slug":  "bai_jiao",
+        "name":  "백각",
+        "faction":  "eastern_aisha",
+        "imageUrl":  "/images/heroes/eastern_aisha/bai_jiao/bai_jiao.webp"
+    },
+    {
+        "slug":  "victoria",
+        "name":  "빅토리아",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/victoria/victoria.webp"
+    },
+    {
+        "slug":  "freyja",
+        "name":  "프레이야",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/freyja/freyja.webp"
+    },
+    {
+        "slug":  "vanessa",
+        "name":  "바네사",
+        "faction":  "seven_knights",
+        "imageUrl":  "/images/heroes/seven_knights/vanessa/vanessa.webp"
+    },
+    {
+        "slug":  "nata",
+        "name":  "나타",
+        "faction":  "eastern_aisha",
+        "imageUrl":  "/images/heroes/eastern_aisha/nata/nata.webp"
+    },
+    {
+        "slug":  "soi",
+        "name":  "소이",
+        "faction":  "western_aisha",
+        "imageUrl":  "/images/heroes/western_aisha/soi/soi.webp"
+    },
+    {
+        "slug":  "zhao_yun",
+        "name":  "조운",
+        "faction":  "heroes_of_three_kingdoms",
+        "imageUrl":  "/images/heroes/heroes_of_three_kingdoms/zhao_yun/zhao_yun.webp"
+    },
+    {
+        "slug":  "chloe",
+        "name":  "클로에",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/chloe/chloe.webp"
+    },
+    {
+        "slug":  "joker",
+        "name":  "조커",
+        "faction":  "adventurers",
+        "imageUrl":  "/images/heroes/adventurers/joker/joker.webp"
+    },
+    {
+        "slug":  "skuld",
+        "name":  "스쿨드",
+        "faction":  "celestial_guardians",
+        "imageUrl":  "/images/heroes/celestial_guardians/skuld/skuld.webp"
+    },
+    {
+        "slug":  "kyrielle",
+        "name":  "키리엘",
+        "faction":  "luminous_revolutionaries",
+        "imageUrl":  "/images/heroes/luminous_revolutionaries/kyrielle/kyrielle.webp"
+    },
+    {
+        "slug":  "teo",
+        "name":  "태오",
+        "faction":  "four_lords_of_old",
+        "imageUrl":  "/images/heroes/four_lords_of_old/teo/teo.webp"
+    },
+    {
+        "slug":  "yeonhee",
+        "name":  "연희",
+        "faction":  "four_lords_of_old",
+        "imageUrl":  "/images/heroes/four_lords_of_old/yeonhee/yeonhee.webp"
+    },
+    {
+        "slug":  "dongyeong",
+        "name":  "동영",
+        "faction":  "shinji",
+        "imageUrl":  "/images/heroes/shinji/dongyeong/dongyeong.webp"
+    },
+    {
+        "slug":  "karl_heron",
+        "name":  "칼 헤론",
+        "faction":  "night_crows",
+        "imageUrl":  "/images/heroes/night_crows/karl_heron/karl_heron.webp"
+    },
+    {
+        "slug":  "sogyo",
+        "name":  "소교",
+        "faction":  "eastern_aisha",
+        "imageUrl":  "/images/heroes/eastern_aisha/sogyo/sogyo.webp"
+    },
+    {
+        "slug":  "rook",
+        "name":  "룩",
+        "faction":  "terra",
+        "imageUrl":  "/images/heroes/terra/rook/rook.webp"
+    },
+    {
+        "slug":  "platin",
+        "name":  "플라튼",
+        "faction":  "dark_knights",
+        "imageUrl":  "/images/heroes/dark_knights/platin/platin.webp"
+    },
+    {
+        "slug":  "yungeon",
+        "name":  "윤건",
+        "faction":  "hidden_masters",
+        "imageUrl":  "/images/heroes/hidden_masters/yungeon/yungeon.webp"
+    },
+    {
+        "slug":  "pallanus",
+        "name":  "팔라누스",
+        "faction":  "dark_knights",
+        "imageUrl":  "/images/heroes/dark_knights/pallanus/pallanus.webp"
+    },
+    {
+        "slug":  "bane",
+        "name":  "베인",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/bane/bane.webp"
+    },
+    {
+        "slug":  "cleo",
+        "name":  "클레오",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/cleo/cleo.webp"
+    },
+    {
+        "slug":  "hokin",
+        "name":  "호킨",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/hokin/hokin.webp"
+    },
+    {
+        "slug":  "leo",
+        "name":  "레오",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/leo/leo.webp"
+    },
+    {
+        "slug":  "rahkun",
+        "name":  "라쿤",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/rahkun/rahkun.webp"
+    },
+    {
+        "slug":  "sarah",
+        "name":  "사라",
+        "faction":  "else",
+        "imageUrl":  "/images/heroes/else/sarah/sarah.webp"
+    },
+    {
+        "slug":  "cha_haein",
+        "name":  "차해인",
+        "faction":  "collaboration",
+        "imageUrl":  "/images/heroes/collaboration/cha_haein/cha_haein.webp"
+    },
+    {
+        "slug":  "lee_joohee",
+        "name":  "이주희",
+        "faction":  "collaboration",
+        "imageUrl":  "/images/heroes/collaboration/lee_joohee/lee_joohee.webp"
+    },
+    {
+        "slug":  "sung_jinwoo",
+        "name":  "성진우",
+        "faction":  "collaboration",
+        "imageUrl":  "/images/heroes/collaboration/sung_jinwoo/sung_jinwoo.webp"
+    },
+    {
+        "slug":  "yoo_jinho",
+        "name":  "유진호",
+        "faction":  "collaboration",
+        "imageUrl":  "/images/heroes/collaboration/yoo_jinho/yoo_jinho.webp"
+    },
+    {
+        "slug":  "espada",
+        "name":  "에스파다",
+        "faction":  "holy_cross_crusaders",
+        "imageUrl":  "/images/heroes/holy_cross_crusaders/espada/espada.webp"
+    }
+]

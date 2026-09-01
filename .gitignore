@@ -14,3 +14,11 @@ frontend/.env.local
 
 # Logs
 *.log
+
+# Backend - Gradle
+backend/.gradle/
+backend/build/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/

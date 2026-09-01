@@ -19,11 +19,11 @@ public record AttackRecommendationRequest(
         @Min(value = 0, message = "추천 순서는 0 이상이어야 합니다.")
         Integer sortOrder,
 
-        @Size(max = 50, message = "펫 이름은 50자 이하여야 합니다.")
-        String petName,
+        /** 구버전 단일 펫. 신규는 petIds를 쓴다. */
+        Long petId,
 
-        @Size(max = 500, message = "펫 이미지 URL은 500자 이하여야 합니다.")
-        String petImageUrl,
+        /** 추천 공격팀 펫 — pets 카탈로그 ID 목록. */
+        List<Long> petIds,
 
         @NotEmpty(message = "추천 공격팀 캐릭터를 1명 이상 등록해 주세요.")
         @Size(max = 3, message = "추천 공격팀 캐릭터는 최대 3명까지 등록할 수 있습니다.")
@@ -31,6 +31,7 @@ public record AttackRecommendationRequest(
         List<AttackTeamMemberRequest> attackTeamMembers,
 
         @NotNull(message = "스킬 순서 목록이 필요합니다.")
+        @Size(max = 3, message = "스킬 사용 순서는 최대 3개입니다.")
         @Valid
         List<SkillStepRequest> skillSteps
 ) {

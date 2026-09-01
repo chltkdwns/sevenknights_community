@@ -1,15 +1,24 @@
 package com.sevenknights.community.service.guildwar;
 
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberEquipment;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberRing;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendation;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendationPet;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackTeamMember;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeam;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeamMember;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeamRepository;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarSkillStep;
-import com.sevenknights.community.domain.guildwar.character.GameCharacter;
-import com.sevenknights.community.domain.guildwar.character.GameCharacterRepository;
 import com.sevenknights.community.domain.guildwar.character.Skill;
 import com.sevenknights.community.domain.guildwar.character.SkillRepository;
+import com.sevenknights.community.domain.guildwar.master.Equipment;
+import com.sevenknights.community.domain.guildwar.master.EquipmentRepository;
+import com.sevenknights.community.domain.guildwar.master.Ring;
+import com.sevenknights.community.domain.guildwar.master.RingRepository;
+import com.sevenknights.community.domain.hero.Hero;
+import com.sevenknights.community.domain.hero.HeroRepository;
+import com.sevenknights.community.domain.pet.PetCatalogRepository;
+import com.sevenknights.community.dto.guildwar.attack.AttackMemberRingRequest;
 import com.sevenknights.community.dto.guildwar.attack.AttackRecommendationRequest;
 import com.sevenknights.community.dto.guildwar.attack.AttackTeamMemberRequest;
 import com.sevenknights.community.dto.guildwar.attack.EnemyTeamMemberRequest;
@@ -23,9 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,16 +58,22 @@ import java.util.stream.Collectors;
 public class EnemyTeamAdminService {
 
     private final GuildWarEnemyTeamRepository enemyTeamRepository;
-    private final GameCharacterRepository gameCharacterRepository;
+    private final HeroRepository heroRepository;
     private final SkillRepository skillRepository;
+    private final PetCatalogRepository petCatalogRepository;
+    private final EquipmentRepository equipmentRepository;
+    private final RingRepository ringRepository;
     private final EntityManager entityManager;
 
     @Transactional
     public Long save(EnemyTeamUpsertRequest request) {
         validateRequest(request);
 
-        Map<Long, GameCharacter> characterMap = loadCharacters(collectCharacterIds(request));
+        Map<Long, Hero> heroMap = loadHeroes(collectHeroIds(request));
         Map<Long, Skill> skillMap = loadSkills(collectSkillIds(request));
+        Map<Long, com.sevenknights.community.domain.pet.Pet> catalogPetMap = loadCatalogPets(collectPetIds(request));
+        Map<Long, Equipment> equipmentMap = loadEquipments(collectEquipmentIds(request));
+        Map<Long, Ring> ringMap = loadRings(collectRingIds(request));
 
         GuildWarEnemyTeam team = GuildWarEnemyTeam.builder()
                 .title(request.title())
@@ -67,8 +84,8 @@ public class EnemyTeamAdminService {
                 .petImageUrl(request.petImageUrl())
                 .build();
 
-        applyMembers(team, request.members(), characterMap);
-        applyRecommendations(team, request.recommendations(), characterMap, skillMap);
+        applyMembers(team, request.members(), heroMap);
+        applyRecommendations(team, request.recommendations(), heroMap, skillMap, catalogPetMap, equipmentMap, ringMap);
 
         return enemyTeamRepository.save(team).getId();
     }
@@ -80,8 +97,11 @@ public class EnemyTeamAdminService {
         GuildWarEnemyTeam team = enemyTeamRepository.findByIdWithMembers(id)
                 .orElseThrow(() -> new NotFoundException("상대 방어팀을 찾을 수 없습니다."));
 
-        Map<Long, GameCharacter> characterMap = loadCharacters(collectCharacterIds(request));
+        Map<Long, Hero> heroMap = loadHeroes(collectHeroIds(request));
         Map<Long, Skill> skillMap = loadSkills(collectSkillIds(request));
+        Map<Long, com.sevenknights.community.domain.pet.Pet> catalogPetMap = loadCatalogPets(collectPetIds(request));
+        Map<Long, Equipment> equipmentMap = loadEquipments(collectEquipmentIds(request));
+        Map<Long, Ring> ringMap = loadRings(collectRingIds(request));
 
         team.update(
                 request.title(),
@@ -99,8 +119,8 @@ public class EnemyTeamAdminService {
         // UK(enemy_team_id, slot_order) 등 제약 때문에 DELETE가 INSERT보다 먼저 DB에 반영되어야 한다.
         entityManager.flush();
 
-        applyMembers(team, request.members(), characterMap);
-        applyRecommendations(team, request.recommendations(), characterMap, skillMap);
+        applyMembers(team, request.members(), heroMap);
+        applyRecommendations(team, request.recommendations(), heroMap, skillMap, catalogPetMap, equipmentMap, ringMap);
 
         return team.getId();
     }
@@ -111,10 +131,13 @@ public class EnemyTeamAdminService {
                 "상대 방어팀 슬롯 순서가 중복되었습니다."
         );
 
-        Set<Long> characterIds = new HashSet<>();
+        Set<Long> heroIds = new HashSet<>();
         Set<Long> skillIds = new HashSet<>();
+        Set<Long> petIds = new HashSet<>();
+        Set<Long> equipmentIds = new HashSet<>();
+        Set<Long> ringIds = new HashSet<>();
 
-        request.members().forEach(member -> characterIds.add(member.characterId()));
+        request.members().forEach(member -> heroIds.add(member.heroId()));
 
         for (AttackRecommendationRequest recommendation : request.recommendations()) {
             validateNoDuplicateOrders(
@@ -126,15 +149,27 @@ public class EnemyTeamAdminService {
                     "스킬 순서가 중복되었습니다."
             );
 
-            recommendation.attackTeamMembers().forEach(member -> characterIds.add(member.characterId()));
-            recommendation.skillSteps().forEach(step -> skillIds.add(step.skillId()));
+            validateNoDuplicatePetIds(resolvePetIds(recommendation), "추천 공격팀에 같은 펫을 중복 선택할 수 없습니다.");
 
-            // TODO MVP 제외: skillId가 이 추천의 attackTeamMembers에 실린 캐릭터 소속인지 검증.
-            // 잘못된 skill_id 조합은 관리자 입력 실수로 간주하고, MVP에서는 존재 여부만 확인한다.
+            petIds.addAll(resolvePetIds(recommendation));
+
+            recommendation.attackTeamMembers().forEach(member -> {
+                heroIds.add(member.heroId());
+                equipmentIds(member).forEach(equipmentIds::add);
+                rings(member).forEach(ring -> ringIds.add(ring.ringId()));
+            });
+            recommendation.skillSteps().forEach(step -> {
+                if (step.skillId() != null) {
+                    skillIds.add(step.skillId());
+                }
+            });
         }
 
-        validateCharactersExist(characterIds);
+        validateHeroesExist(heroIds);
         validateSkillsExist(skillIds);
+        validateCatalogPetsExist(petIds);
+        validateEquipmentsExist(equipmentIds);
+        validateRingsExist(ringIds);
     }
 
     private void validateNoDuplicateOrders(List<Integer> orders, String message) {
@@ -144,13 +179,10 @@ public class EnemyTeamAdminService {
         }
     }
 
-    private void validateCharactersExist(Set<Long> characterIds) {
-        if (characterIds.isEmpty()) {
-            return;
-        }
-        long foundCount = gameCharacterRepository.findAllById(characterIds).size();
-        if (foundCount != characterIds.size()) {
-            throw new BadRequestException("존재하지 않는 캐릭터가 포함되어 있습니다.");
+    private void validateNoDuplicatePetIds(List<Long> petIds, String message) {
+        long distinctCount = petIds.stream().distinct().count();
+        if (distinctCount != petIds.size()) {
+            throw new BadRequestException(message);
         }
     }
 
@@ -164,26 +196,99 @@ public class EnemyTeamAdminService {
         }
     }
 
-    private Set<Long> collectCharacterIds(EnemyTeamUpsertRequest request) {
-        Set<Long> characterIds = new HashSet<>();
-        request.members().forEach(member -> characterIds.add(member.characterId()));
+    private void validateHeroesExist(Set<Long> heroIds) {
+        if (heroIds.isEmpty()) {
+            return;
+        }
+        long foundCount = heroRepository.findAllById(heroIds).size();
+        if (foundCount != heroIds.size()) {
+            throw new BadRequestException("존재하지 않는 영웅이 포함되어 있습니다.");
+        }
+    }
+
+    private void validateCatalogPetsExist(Set<Long> petIds) {
+        if (petIds.isEmpty()) {
+            return;
+        }
+        long foundCount = petCatalogRepository.findAllById(petIds).size();
+        if (foundCount != petIds.size()) {
+            throw new BadRequestException("존재하지 않는 펫이 포함되어 있습니다.");
+        }
+    }
+
+    private void validateEquipmentsExist(Set<Long> equipmentIds) {
+        if (equipmentIds.isEmpty()) {
+            return;
+        }
+        long foundCount = equipmentRepository.findAllById(equipmentIds).size();
+        if (foundCount != equipmentIds.size()) {
+            throw new BadRequestException("존재하지 않는 장비가 포함되어 있습니다.");
+        }
+    }
+
+    private void validateRingsExist(Set<Long> ringIds) {
+        if (ringIds.isEmpty()) {
+            return;
+        }
+        long foundCount = ringRepository.findAllById(ringIds).size();
+        if (foundCount != ringIds.size()) {
+            throw new BadRequestException("존재하지 않는 반지가 포함되어 있습니다.");
+        }
+    }
+
+    private Set<Long> collectHeroIds(EnemyTeamUpsertRequest request) {
+        Set<Long> heroIds = new HashSet<>();
+        request.members().forEach(member -> heroIds.add(member.heroId()));
         request.recommendations().forEach(recommendation ->
-                recommendation.attackTeamMembers().forEach(member -> characterIds.add(member.characterId()))
+                recommendation.attackTeamMembers().forEach(member -> heroIds.add(member.heroId()))
         );
-        return characterIds;
+        return heroIds;
     }
 
     private Set<Long> collectSkillIds(EnemyTeamUpsertRequest request) {
         Set<Long> skillIds = new HashSet<>();
         request.recommendations().forEach(recommendation ->
-                recommendation.skillSteps().forEach(step -> skillIds.add(step.skillId()))
+                recommendation.skillSteps().forEach(step -> {
+                    if (step.skillId() != null) {
+                        skillIds.add(step.skillId());
+                    }
+                })
         );
         return skillIds;
     }
 
-    private Map<Long, GameCharacter> loadCharacters(Set<Long> characterIds) {
-        return gameCharacterRepository.findAllById(characterIds).stream()
-                .collect(Collectors.toMap(GameCharacter::getId, Function.identity()));
+    private Set<Long> collectPetIds(EnemyTeamUpsertRequest request) {
+        Set<Long> petIds = new HashSet<>();
+        request.recommendations().forEach(recommendation -> petIds.addAll(resolvePetIds(recommendation)));
+        return petIds;
+    }
+
+    private static List<Long> resolvePetIds(AttackRecommendationRequest recommendation) {
+        if (recommendation.petIds() != null && !recommendation.petIds().isEmpty()) {
+            return recommendation.petIds().stream().filter(Objects::nonNull).toList();
+        }
+        if (recommendation.petId() != null) {
+            return List.of(recommendation.petId());
+        }
+        return List.of();
+    }
+
+    private Set<Long> collectEquipmentIds(EnemyTeamUpsertRequest request) {
+        Set<Long> equipmentIds = new HashSet<>();
+        request.recommendations().forEach(recommendation ->
+                recommendation.attackTeamMembers().forEach(member -> equipmentIds.addAll(equipmentIds(member)))
+        );
+        return equipmentIds;
+    }
+
+    private Set<Long> collectRingIds(EnemyTeamUpsertRequest request) {
+        Set<Long> ringIds = new HashSet<>();
+        request.recommendations().forEach(recommendation ->
+                recommendation.attackTeamMembers().forEach(member ->
+                        rings(member).forEach(ring -> ringIds.add(ring.ringId()))
+                )
+        );
+        return ringIds;
     }
 
     private Map<Long, Skill> loadSkills(Set<Long> skillIds) {
@@ -191,15 +296,36 @@ public class EnemyTeamAdminService {
                 .collect(Collectors.toMap(Skill::getId, Function.identity()));
     }
 
+    private Map<Long, Hero> loadHeroes(Set<Long> heroIds) {
+        return heroRepository.findAllById(heroIds).stream()
+                .collect(Collectors.toMap(Hero::getId, Function.identity()));
+    }
+
+    private Map<Long, com.sevenknights.community.domain.pet.Pet> loadCatalogPets(Set<Long> petIds) {
+        return petCatalogRepository.findAllById(petIds).stream()
+                .collect(Collectors.toMap(com.sevenknights.community.domain.pet.Pet::getId, Function.identity()));
+    }
+
+    private Map<Long, Equipment> loadEquipments(Set<Long> equipmentIds) {
+        return equipmentRepository.findAllById(equipmentIds).stream()
+                .collect(Collectors.toMap(Equipment::getId, Function.identity()));
+    }
+
+    private Map<Long, Ring> loadRings(Set<Long> ringIds) {
+        return ringRepository.findAllById(ringIds).stream()
+                .collect(Collectors.toMap(Ring::getId, Function.identity()));
+    }
+
     private void applyMembers(
             GuildWarEnemyTeam team,
             List<EnemyTeamMemberRequest> members,
-            Map<Long, GameCharacter> characterMap
+            Map<Long, Hero> heroMap
     ) {
         for (EnemyTeamMemberRequest memberRequest : members) {
             team.getMembers().add(GuildWarEnemyTeamMember.builder()
                     .enemyTeam(team)
-                    .character(characterMap.get(memberRequest.characterId()))
+                    .hero(heroMap.get(memberRequest.heroId()))
+                    .character(null)
                     .slotOrder(memberRequest.slotOrder())
                     .build());
         }
@@ -208,36 +334,117 @@ public class EnemyTeamAdminService {
     private void applyRecommendations(
             GuildWarEnemyTeam team,
             List<AttackRecommendationRequest> recommendations,
-            Map<Long, GameCharacter> characterMap,
-            Map<Long, Skill> skillMap
+            Map<Long, Hero> heroMap,
+            Map<Long, Skill> skillMap,
+            Map<Long, com.sevenknights.community.domain.pet.Pet> catalogPetMap,
+            Map<Long, Equipment> equipmentMap,
+            Map<Long, Ring> ringMap
     ) {
         for (AttackRecommendationRequest recommendationRequest : recommendations) {
+            // 신규 다중 펫은 조인 테이블에만 저장한다. 루트 pet/catalog_pet 컬럼은 구버전 호환용.
             GuildWarAttackRecommendation recommendation = GuildWarAttackRecommendation.builder()
                     .enemyTeam(team)
                     .title(recommendationRequest.title())
                     .description(recommendationRequest.description())
                     .sortOrder(recommendationRequest.sortOrder())
-                    .petName(recommendationRequest.petName())
-                    .petImageUrl(recommendationRequest.petImageUrl())
+                    .pet(null)
+                    .catalogPet(null)
+                    .petName(null)
+                    .petImageUrl(null)
                     .build();
             team.getRecommendations().add(recommendation);
 
-            for (AttackTeamMemberRequest memberRequest : recommendationRequest.attackTeamMembers()) {
-                recommendation.getAttackTeamMembers().add(GuildWarAttackTeamMember.builder()
+            int petOrder = 1;
+            for (Long petId : resolvePetIds(recommendationRequest)) {
+                com.sevenknights.community.domain.pet.Pet catalogPet = catalogPetMap.get(petId);
+                recommendation.getRecommendationPets().add(GuildWarAttackRecommendationPet.builder()
                         .recommendation(recommendation)
-                        .character(characterMap.get(memberRequest.characterId()))
-                        .slotOrder(memberRequest.slotOrder())
+                        .catalogPet(catalogPet)
+                        .sortOrder(petOrder++)
                         .build());
             }
 
-            for (SkillStepRequest stepRequest : recommendationRequest.skillSteps()) {
-                recommendation.getSkillSteps().add(GuildWarSkillStep.builder()
+            for (AttackTeamMemberRequest memberRequest : recommendationRequest.attackTeamMembers()) {
+                GuildWarAttackTeamMember member = GuildWarAttackTeamMember.builder()
                         .recommendation(recommendation)
-                        .stepOrder(stepRequest.stepOrder())
-                        .skill(skillMap.get(stepRequest.skillId()))
-                        .note(stepRequest.note())
-                        .build());
+                        .hero(heroMap.get(memberRequest.heroId()))
+                        .character(null)
+                        .slotOrder(memberRequest.slotOrder())
+                        .description(memberRequest.description())
+                        .build();
+                recommendation.getAttackTeamMembers().add(member);
+
+                // 멤버 행이 먼저 persist 대상이 된 뒤에 자식 장비/반지를 붙인다. 이름·이미지는 저장하지 않는다.
+                int equipmentOrder = 1;
+                for (Long equipmentId : equipmentIds(memberRequest)) {
+                    member.getEquipments().add(GuildWarAttackMemberEquipment.builder()
+                            .member(member)
+                            .equipment(equipmentMap.get(equipmentId))
+                            .sortOrder(equipmentOrder++)
+                            .build());
+                }
+
+                int ringOrder = 1;
+                for (AttackMemberRingRequest ringRequest : rings(memberRequest)) {
+                    member.getRings().add(GuildWarAttackMemberRing.builder()
+                            .member(member)
+                            .ring(ringMap.get(ringRequest.ringId()))
+                            .enchantment(blankToNull(ringRequest.enchantment()))
+                            .sortOrder(ringOrder++)
+                            .build());
+                }
+            }
+
+            List<SkillStepRequest> orderedSteps = recommendationRequest.skillSteps().stream()
+                    .sorted(Comparator.comparingInt(SkillStepRequest::stepOrder))
+                    .toList();
+            for (SkillStepRequest stepRequest : orderedSteps) {
+                if (stepRequest.skillId() != null) {
+                    recommendation.getSkillSteps().add(GuildWarSkillStep.builder()
+                            .recommendation(recommendation)
+                            .stepOrder(stepRequest.stepOrder())
+                            .skill(skillMap.get(stepRequest.skillId()))
+                            .note(stepRequest.note())
+                            .build());
+                    continue;
+                }
+                // 직접 입력 모드: note만 저장. 카탈로그 모드의 스킬 사용 X는 note 없이 break.
+                if (isNotBlank(stepRequest.note())) {
+                    recommendation.getSkillSteps().add(GuildWarSkillStep.builder()
+                            .recommendation(recommendation)
+                            .stepOrder(stepRequest.stepOrder())
+                            .skill(null)
+                            .note(stepRequest.note().trim())
+                            .build());
+                    continue;
+                }
+                break;
             }
         }
+    }
+
+    private static List<Long> equipmentIds(AttackTeamMemberRequest member) {
+        if (member.equipmentIds() == null) {
+            return List.of();
+        }
+        return member.equipmentIds().stream().filter(Objects::nonNull).toList();
+    }
+
+    private static List<AttackMemberRingRequest> rings(AttackTeamMemberRequest member) {
+        if (member.rings() == null) {
+            return List.of();
+        }
+        return member.rings().stream().filter(ring -> ring != null && ring.ringId() != null).toList();
+    }
+
+    private static String blankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
+    }
+
+    private static boolean isNotBlank(String value) {
+        return value != null && !value.isBlank();
     }
 }

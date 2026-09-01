@@ -11,5 +11,7 @@ public interface SkillRepository extends JpaRepository<Skill, Long> {
 
     List<Skill> findByCharacterIdAndIsActiveTrueOrderBySortOrderAsc(Long characterId);
 
+    List<Skill> findByCharacterIdInAndIsActiveTrueOrderBySortOrderAsc(Iterable<Long> characterIds);
+
     Optional<Skill> findByCharacterIdAndSortOrder(Long characterId, int sortOrder);
 }

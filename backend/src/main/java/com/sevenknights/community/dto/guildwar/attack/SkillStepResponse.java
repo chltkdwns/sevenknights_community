@@ -1,15 +1,16 @@
 package com.sevenknights.community.dto.guildwar.attack;
 
 import com.sevenknights.community.domain.guildwar.attack.GuildWarSkillStep;
+import com.sevenknights.community.domain.guildwar.character.Skill;
 import com.sevenknights.community.domain.guildwar.character.SkillType;
 
 /**
  * 스킬 시퀀스 한 스텝 응답.
- * {@code skillId}만 내리면 프론트가 스킬 메타를 추가 조회해야 하므로,
- * 가이드 상세 화면을 한 번의 API로 그리기 위해 스킬·소유 캐릭터 정보를 펼쳐서 내려준다.
+ * skill FK가 있으면 카탈로그 모드, note만 있으면 직접 입력 모드다.
  */
 public record SkillStepResponse(
         int stepOrder,
+        boolean skipped,
         String note,
         Long skillId,
         SkillType skillType,
@@ -19,15 +20,31 @@ public record SkillStepResponse(
         String characterName
 ) {
     public static SkillStepResponse from(GuildWarSkillStep step) {
+        Skill skill = step.getSkill();
+        if (skill == null) {
+            boolean hasManualText = step.getNote() != null && !step.getNote().isBlank();
+            return new SkillStepResponse(
+                    step.getStepOrder(),
+                    !hasManualText,
+                    step.getNote(),
+                    null,
+                    null,
+                    hasManualText ? step.getNote() : null,
+                    null,
+                    null,
+                    null
+            );
+        }
         return new SkillStepResponse(
                 step.getStepOrder(),
+                false,
                 step.getNote(),
-                step.getSkill().getId(),
-                step.getSkill().getSkillType(),
-                step.getSkill().getName(),
-                step.getSkill().getImageUrl(),
-                step.getSkill().getCharacter().getId(),
-                step.getSkill().getCharacter().getName()
+                skill.getId(),
+                skill.getSkillType(),
+                skill.getName(),
+                skill.getImageUrl(),
+                skill.getCharacter().getId(),
+                skill.getCharacter().getName()
         );
     }
 }

@@ -14,7 +14,6 @@ export default function EditGuildWarAttackPage() {
   const [team, setTeam] = useState<EnemyTeamDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [savedMessage, setSavedMessage] = useState("");
 
   useEffect(() => {
     if (!id || Number.isNaN(id)) return;
@@ -23,6 +22,8 @@ export default function EditGuildWarAttackPage() {
       setLoading(true);
       setError("");
       try {
+        // 공개 조회 API — Authorization을 붙이지 않는다.
+        // auth: true로 부르면 401 시 api.ts가 localStorage를 비워 헤더가 로그아웃으로 바뀐다.
         const data = await apiRequest<EnemyTeamDetail>(
           `/api/guild-war/attack/enemy-teams/${id}`
         );
@@ -75,17 +76,7 @@ export default function EditGuildWarAttackPage() {
           </Link>
         }
       >
-        {savedMessage ? <p className="mb-4 text-sm text-accent">{savedMessage}</p> : null}
-
-        <EnemyTeamForm
-          mode="edit"
-          teamId={id}
-          initialDetail={team}
-          submitLabel="수정 저장"
-          onSuccess={() => {
-            setSavedMessage("저장되었습니다.");
-          }}
-        />
+        <EnemyTeamForm mode="edit" teamId={id} initialDetail={team} />
       </AdminPanel>
     </>
   );

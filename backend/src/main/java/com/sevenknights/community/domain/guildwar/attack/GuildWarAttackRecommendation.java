@@ -1,5 +1,6 @@
 package com.sevenknights.community.domain.guildwar.attack;
 
+import com.sevenknights.community.domain.guildwar.master.Pet;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,10 +53,19 @@ public class GuildWarAttackRecommendation {
     @Column(nullable = false)
     private int sortOrder;
 
+    /** 추천 공격팀이 쓰는 펫(구버전 gw_pets FK). 신규 저장은 catalogPet만 쓴다. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_id")
+    private Pet pet;
+
+    /** 추천 공격팀 펫 — pets 카탈로그 FK. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "catalog_pet_id")
+    private com.sevenknights.community.domain.pet.Pet catalogPet;
+
     /**
-     * MVP: 추천 공격팀에 사용한 펫을 표시용으로만 저장한다.
-     * 상대팀({@link GuildWarEnemyTeam}) 펫과 독립 — 추천마다 다른 펫을 쓸 수 있다.
-     * 펫 계산·도감 도입 시 {@code pets} 테이블로 분리해 {@code pet_id} FK로 전환한다.
+     * 구버전 문자열 저장. Hibernate가 컬럼을 지우지 않으므로 기존 행은 유지되고,
+     * 공개 API는 pet FK가 있으면 마스터 값을, 없으면 이 컬럼을 사용한다.
      */
     @Column(name = "pet_name", length = 50)
     private String petName;
@@ -68,6 +78,10 @@ public class GuildWarAttackRecommendation {
 
     @OneToMany(mappedBy = "recommendation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GuildWarSkillStep> skillSteps = new ArrayList<>();
+
+    /** 신규 다중 펫 — pets 카탈로그 조인 테이블. */
+    @OneToMany(mappedBy = "recommendation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GuildWarAttackRecommendationPet> recommendationPets = new ArrayList<>();
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -83,6 +97,8 @@ public class GuildWarAttackRecommendation {
             String title,
             String description,
             int sortOrder,
+            Pet pet,
+            com.sevenknights.community.domain.pet.Pet catalogPet,
             String petName,
             String petImageUrl
     ) {
@@ -90,7 +106,31 @@ public class GuildWarAttackRecommendation {
         this.title = title;
         this.description = description;
         this.sortOrder = sortOrder;
+        this.pet = pet;
+        this.catalogPet = catalogPet;
         this.petName = petName;
         this.petImageUrl = petImageUrl;
+    }
+
+    /** 신규는 catalog_pet_id, 구버전은 pet_id(gw_pets). */
+    public Long resolvePetId() {
+        if (catalogPet != null) {
+            return catalogPet.getId();
+        }
+        return pet != null ? pet.getId() : null;
+    }
+
+    public String resolvePetName() {
+        if (catalogPet != null) {
+            return catalogPet.getName();
+        }
+        return pet != null ? pet.getName() : petName;
+    }
+
+    public String resolvePetImageUrl() {
+        if (catalogPet != null) {
+            return catalogPet.getImageUrl();
+        }
+        return pet != null ? pet.getImageUrl() : petImageUrl;
     }
 }

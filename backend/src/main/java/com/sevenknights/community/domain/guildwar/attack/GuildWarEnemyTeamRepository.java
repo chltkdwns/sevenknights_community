@@ -44,6 +44,8 @@ public interface GuildWarEnemyTeamRepository extends JpaRepository<GuildWarEnemy
 
             LEFT JOIN FETCH m.character
 
+            LEFT JOIN FETCH m.hero
+
             WHERE t.isPublished = true
 
             ORDER BY t.sortOrder ASC
@@ -67,6 +69,8 @@ public interface GuildWarEnemyTeamRepository extends JpaRepository<GuildWarEnemy
             LEFT JOIN FETCH t.members m
 
             LEFT JOIN FETCH m.character
+
+            LEFT JOIN FETCH m.hero
 
             WHERE t.id = :id AND t.isPublished = true
 

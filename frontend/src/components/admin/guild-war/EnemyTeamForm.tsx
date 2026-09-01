@@ -1,4 +1,6 @@
 "use client";
+// React Compiler가 조건부 early-return과 훅 순서를 어긋나게 만드는 것을 막는다.
+"use no memo";
 
 import { FormEvent, useEffect, useState } from "react";
 import { AttackRecommendationEditor } from "@/components/admin/guild-war/AttackRecommendationEditor";
@@ -15,37 +17,34 @@ import {
   type EnemyTeamFormState,
   validateEnemyTeamForm,
 } from "@/lib/guild-war-admin";
-import type { EnemyTeamDetail, GameCharacterAdmin } from "@/types/guild-war";
+import type { EnemyTeamDetail, HeroCatalog, LoadoutItemAdmin, PetCatalog } from "@/types/guild-war";
 
 type EnemyTeamFormProps = {
   mode: "create" | "edit";
   teamId?: number;
   initialDetail?: EnemyTeamDetail;
-  submitLabel: string;
-  onSuccess: (id: number) => void;
+  /** 최초 POST 성공 시 부모가 edit 모드로 전환할 때 등에 사용. 생략 가능. */
+  onSuccess?: (id: number) => void;
 };
 
 export function EnemyTeamForm({
   mode,
   teamId,
   initialDetail,
-  submitLabel,
   onSuccess,
 }: EnemyTeamFormProps) {
   const { isLoggedIn } = useAuth();
-  const [form, setForm] = useState<EnemyTeamFormState>(() =>
-    initialDetail ? enemyTeamDetailToForm(initialDetail) : createEmptyEnemyTeamForm()
-  );
-  const [characters, setCharacters] = useState<GameCharacterAdmin[]>([]);
+  const [form, setForm] = useState<EnemyTeamFormState>(createEmptyEnemyTeamForm);
+  const [heroes, setHeroes] = useState<HeroCatalog[]>([]);
+  const [catalogPets, setCatalogPets] = useState<PetCatalog[]>([]);
+  const [equipments, setEquipments] = useState<LoadoutItemAdmin[]>([]);
+  const [rings, setRings] = useState<LoadoutItemAdmin[]>([]);
+  // 새로 추가한 카드만 기본 펼침. 수정 화면은 첫 추천팀만 펼친다.
+  const [lastAddedRecommendationKey, setLastAddedRecommendationKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (initialDetail) {
-      setForm(enemyTeamDetailToForm(initialDetail));
-    }
-  }, [initialDetail]);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -58,29 +57,57 @@ export function EnemyTeamForm({
       setLoading(true);
       setError("");
       try {
-        const data = await apiRequest<GameCharacterAdmin[]>("/api/admin/guild-war/characters", {
-          auth: true,
-        });
-        setCharacters(data);
+        const catalogResults = await Promise.allSettled([
+          apiRequest<HeroCatalog[]>("/api/admin/catalog/heroes", { auth: true }),
+          apiRequest<PetCatalog[]>("/api/admin/catalog/pets", { auth: true }),
+          apiRequest<LoadoutItemAdmin[]>("/api/admin/guild-war/equipments", { auth: true }),
+          apiRequest<LoadoutItemAdmin[]>("/api/admin/guild-war/rings", { auth: true }),
+        ]);
+
+        const heroData = catalogResults[0].status === "fulfilled" ? catalogResults[0].value : [];
+        const petData = catalogResults[1].status === "fulfilled" ? catalogResults[1].value : [];
+        const equipmentData = catalogResults[2].status === "fulfilled" ? catalogResults[2].value : [];
+        const ringData = catalogResults[3].status === "fulfilled" ? catalogResults[3].value : [];
+        setHeroes(heroData);
+        setCatalogPets(petData);
+        setEquipments(equipmentData);
+        setRings(ringData);
+
+        const catalogFailed = catalogResults.some((result) => result.status === "rejected");
+        if (catalogFailed) {
+          setError("영웅/펫/장비/반지 목록 일부를 불러오지 못했습니다. 다시 열어 주세요.");
+        }
+
+        if (initialDetail) {
+          setForm(
+            enemyTeamDetailToForm(initialDetail, {
+              catalogPets: petData,
+              equipments: equipmentData,
+              rings: ringData,
+            })
+          );
+        }
       } catch (err) {
         setError(
           err instanceof ApiRequestError
             ? err.message
-            : "캐릭터 목록을 불러오지 못했습니다."
+            : "관리 데이터를 불러오지 못했습니다."
         );
       } finally {
         setLoading(false);
       }
     })();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, initialDetail]);
 
   const updateForm = (patch: Partial<EnemyTeamFormState>) => {
     setForm((prev) => ({ ...prev, ...patch }));
   };
 
   const addRecommendation = () => {
+    const next = createEmptyRecommendation(form.recommendations.length);
+    setLastAddedRecommendationKey(next.key);
     updateForm({
-      recommendations: [...form.recommendations, createEmptyRecommendation(form.recommendations.length)],
+      recommendations: [...form.recommendations, next],
     });
   };
 
@@ -101,6 +128,7 @@ export function EnemyTeamForm({
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
+    setSuccessMessage("");
 
     const validationError = validateEnemyTeamForm(form);
     if (validationError) {
@@ -123,7 +151,8 @@ export function EnemyTeamForm({
               body: payload,
               auth: true,
             });
-      onSuccess(savedId);
+      onSuccess?.(savedId);
+      setSuccessMessage("저장되었습니다.");
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : "저장에 실패했습니다.");
     } finally {
@@ -163,19 +192,6 @@ export function EnemyTeamForm({
         />
       </label>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input
-          label="펫 이름 (선택)"
-          value={form.petName}
-          onChange={(event) => updateForm({ petName: event.target.value })}
-        />
-        <Input
-          label="펫 이미지 URL (선택)"
-          value={form.petImageUrl}
-          onChange={(event) => updateForm({ petImageUrl: event.target.value })}
-        />
-      </div>
-
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -187,10 +203,11 @@ export function EnemyTeamForm({
       </label>
 
       <div className="rounded-xl border border-border bg-background p-5">
+        {/* 상대 방어팀: 영웅 3명만. 펫·반지는 추천 공격팀(AttackRecommendationEditor)에서만 다룬다. */}
         <TeamMemberPicker
           title="상대 방어팀 캐릭터"
           slots={form.members}
-          characters={characters}
+          heroes={heroes}
           onChange={(members) => updateForm({ members })}
         />
       </div>
@@ -214,7 +231,14 @@ export function EnemyTeamForm({
                 key={recommendation.key}
                 index={index}
                 recommendation={recommendation}
-                characters={characters}
+                heroes={heroes}
+                pets={catalogPets}
+                equipments={equipments}
+                rings={rings}
+                defaultExpanded={
+                  lastAddedRecommendationKey === recommendation.key ||
+                  (lastAddedRecommendationKey == null && index === 0)
+                }
                 onChange={(nextRecommendation) => updateRecommendation(recommendation.key, nextRecommendation)}
                 onRemove={() => removeRecommendation(recommendation.key)}
               />
@@ -223,11 +247,12 @@ export function EnemyTeamForm({
         )}
       </div>
 
+      {successMessage ? <p className="text-sm text-accent">{successMessage}</p> : null}
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
       <div className="flex justify-end">
         <Button type="submit" disabled={submitting}>
-          {submitting ? "저장 중..." : submitLabel}
+          {submitting ? "저장 중..." : "저장"}
         </Button>
       </div>
     </form>

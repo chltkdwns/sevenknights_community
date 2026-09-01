@@ -1,0 +1,16 @@
+[
+    {"slug": "dello", "name": "델로", "imageUrl": "/images/pet/dello.webp"},
+    {"slug": "eirin", "name": "이린", "imageUrl": "/images/pet/eirin.webp"},
+    {"slug": "kree", "name": "크리", "imageUrl": "/images/pet/kree.webp"},
+    {"slug": "pike", "name": "파이크", "imageUrl": "/images/pet/pike.webp"},
+    {"slug": "richel", "name": "리첼", "imageUrl": "/images/pet/richel.webp"},
+    {"slug": "ruu", "name": "루", "imageUrl": "/images/pet/ruu.webp"},
+    {"slug": "yeonji", "name": "연지", "imageUrl": "/images/pet/yeonji.webp"},
+    {"slug": "jeo", "name": "제오", "imageUrl": "/images/pet/jeo.webp"},
+    {"slug": "jev", "name": "제브", "imageUrl": "/images/pet/jev.webp"},
+    {"slug": "karam", "name": "카람", "imageUrl": "/images/pet/karam.webp"},
+    {"slug": "yorang", "name": "요랑", "imageUrl": "/images/pet/yorang.webp"},
+    {"slug": "yu", "name": "유", "imageUrl": "/images/pet/yu.webp"},
+    {"slug": "merparrow", "name": "멜페로", "imageUrl": "/images/pet/merparrow.webp"},
+    {"slug": "windy", "name": "윈디", "imageUrl": "/images/pet/windy.webp"}
+]

@@ -1,11 +1,21 @@
 package com.sevenknights.community.service.guildwar;
 
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberEquipment;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberEquipmentRepository;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberRing;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberRingRepository;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendation;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendationPet;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendationPetRepository;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendationRepository;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeam;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeamRepository;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarSkillStep;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarSkillStepRepository;
+import com.sevenknights.community.domain.guildwar.character.GameCharacter;
+import com.sevenknights.community.domain.guildwar.character.GameCharacterRepository;
+import com.sevenknights.community.domain.guildwar.character.Skill;
+import com.sevenknights.community.domain.guildwar.character.SkillRepository;
 import com.sevenknights.community.dto.guildwar.attack.EnemyTeamDetailResponse;
 import com.sevenknights.community.dto.guildwar.attack.EnemyTeamSummaryResponse;
 import com.sevenknights.community.global.exceptions.NotFoundException;
@@ -35,6 +45,11 @@ public class EnemyTeamService {
     private final GuildWarEnemyTeamRepository enemyTeamRepository;
     private final GuildWarAttackRecommendationRepository recommendationRepository;
     private final GuildWarSkillStepRepository skillStepRepository;
+    private final GameCharacterRepository gameCharacterRepository;
+    private final SkillRepository skillRepository;
+    private final GuildWarAttackMemberEquipmentRepository attackMemberEquipmentRepository;
+    private final GuildWarAttackMemberRingRepository attackMemberRingRepository;
+    private final GuildWarAttackRecommendationPetRepository recommendationPetRepository;
 
     public List<EnemyTeamSummaryResponse> getEnemyTeams() {
         return enemyTeamRepository.findPublishedAllWithMembers().stream()
@@ -53,6 +68,73 @@ public class EnemyTeamService {
                 skillStepRepository.findAllByEnemyTeamIdWithSkillAndCharacter(id).stream()
                         .collect(Collectors.groupingBy(step -> step.getRecommendation().getId()));
 
-        return EnemyTeamDetailResponse.from(team, recommendations, skillStepsByRecommendationId);
+        List<Long> legacyCharacterIds = recommendations.stream()
+                .flatMap(recommendation -> recommendation.getAttackTeamMembers().stream())
+                .filter(member -> member.getCharacter() != null)
+                .map(member -> member.getCharacter().getId())
+                .distinct()
+                .toList();
+
+        List<String> heroNames = recommendations.stream()
+                .flatMap(recommendation -> recommendation.getAttackTeamMembers().stream())
+                .filter(member -> member.getHero() != null)
+                .map(member -> member.getHero().getName())
+                .distinct()
+                .toList();
+
+        Map<String, Long> gameCharacterIdByName = heroNames.isEmpty()
+                ? Map.of()
+                : gameCharacterRepository.findAll().stream()
+                        .filter(character -> heroNames.contains(character.getName()))
+                        .collect(Collectors.toMap(GameCharacter::getName, GameCharacter::getId, (a, b) -> a));
+
+        List<Long> skillCharacterIds = new java.util.ArrayList<>(legacyCharacterIds);
+        gameCharacterIdByName.values().forEach(characterId -> {
+            if (!skillCharacterIds.contains(characterId)) {
+                skillCharacterIds.add(characterId);
+            }
+        });
+
+        Map<Long, List<Skill>> skillsByCharacterId = skillCharacterIds.isEmpty()
+                ? Map.of()
+                : skillRepository.findByCharacterIdInAndIsActiveTrueOrderBySortOrderAsc(skillCharacterIds)
+                        .stream()
+                        .collect(Collectors.groupingBy(skill -> skill.getCharacter().getId()));
+
+        // 장비·반지는 members bag와 동시에 fetch하지 않는다 (MultipleBagFetchException).
+        List<Long> memberIds = recommendations.stream()
+                .flatMap(recommendation -> recommendation.getAttackTeamMembers().stream())
+                .map(member -> member.getId())
+                .toList();
+
+        Map<Long, List<GuildWarAttackMemberEquipment>> equipmentsByMemberId = memberIds.isEmpty()
+                ? Map.of()
+                : attackMemberEquipmentRepository.findByMemberIdInWithEquipment(memberIds).stream()
+                        .collect(Collectors.groupingBy(item -> item.getMember().getId()));
+
+        Map<Long, List<GuildWarAttackMemberRing>> ringsByMemberId = memberIds.isEmpty()
+                ? Map.of()
+                : attackMemberRingRepository.findByMemberIdInWithRing(memberIds).stream()
+                        .collect(Collectors.groupingBy(item -> item.getMember().getId()));
+
+        List<Long> recommendationIds = recommendations.stream()
+                .map(GuildWarAttackRecommendation::getId)
+                .toList();
+
+        Map<Long, List<GuildWarAttackRecommendationPet>> petsByRecommendationId = recommendationIds.isEmpty()
+                ? Map.of()
+                : recommendationPetRepository.findByRecommendationIdInWithCatalogPet(recommendationIds).stream()
+                        .collect(Collectors.groupingBy(item -> item.getRecommendation().getId()));
+
+        return EnemyTeamDetailResponse.from(
+                team,
+                recommendations,
+                skillStepsByRecommendationId,
+                skillsByCharacterId,
+                gameCharacterIdByName,
+                equipmentsByMemberId,
+                ringsByMemberId,
+                petsByRecommendationId
+        );
     }
 }

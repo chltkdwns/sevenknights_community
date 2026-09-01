@@ -1,9 +1,13 @@
 package com.sevenknights.community.dto.guildwar.attack;
 
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberEquipment;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackMemberRing;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendation;
+import com.sevenknights.community.domain.guildwar.attack.GuildWarAttackRecommendationPet;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeam;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarEnemyTeamMember;
 import com.sevenknights.community.domain.guildwar.attack.GuildWarSkillStep;
+import com.sevenknights.community.domain.guildwar.character.Skill;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +32,12 @@ public record EnemyTeamDetailResponse(
     public static EnemyTeamDetailResponse from(
             GuildWarEnemyTeam team,
             List<GuildWarAttackRecommendation> recommendations,
-            Map<Long, List<GuildWarSkillStep>> skillStepsByRecommendationId
+            Map<Long, List<GuildWarSkillStep>> skillStepsByRecommendationId,
+            Map<Long, List<Skill>> skillsByCharacterId,
+            Map<String, Long> gameCharacterIdByName,
+            Map<Long, List<GuildWarAttackMemberEquipment>> equipmentsByMemberId,
+            Map<Long, List<GuildWarAttackMemberRing>> ringsByMemberId,
+            Map<Long, List<GuildWarAttackRecommendationPet>> petsByRecommendationId
     ) {
         return new EnemyTeamDetailResponse(
                 team.getId(),
@@ -45,7 +54,12 @@ public record EnemyTeamDetailResponse(
                         .sorted(Comparator.comparingInt(GuildWarAttackRecommendation::getSortOrder))
                         .map(recommendation -> AttackRecommendationResponse.from(
                                 recommendation,
-                                skillStepsByRecommendationId.getOrDefault(recommendation.getId(), List.of())
+                                skillStepsByRecommendationId.getOrDefault(recommendation.getId(), List.of()),
+                                skillsByCharacterId,
+                                gameCharacterIdByName,
+                                equipmentsByMemberId,
+                                ringsByMemberId,
+                                petsByRecommendationId.getOrDefault(recommendation.getId(), List.of())
                         ))
                         .toList()
         );

@@ -36,7 +36,7 @@ export default function AdminGuildWarAttackPage() {
       title="길드전 공격 가이드"
       action={
         <Link href="/admin/guild-war/attack/new">
-          <Button>새로 등록</Button>
+          <Button type="button">새로 등록</Button>
         </Link>
       }
     >
@@ -62,11 +62,17 @@ export default function AdminGuildWarAttackPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
+                  {/* a 안에 button을 넣으면 브라우저가 전체 새로고침할 수 있다. 그때 AdminLayout이
+                      서버 스냅샷(비로그인)으로 다시 붙으면 로그인 화면으로 쫓겨 난다. */}
                   <Link href={`/admin/guild-war/attack/${team.id}/edit`}>
-                    <Button variant="secondary">수정</Button>
+                    <Button type="button" variant="secondary">
+                      수정
+                    </Button>
                   </Link>
                   <Link href={`/guides/guild-war/attack/${team.id}`}>
-                    <Button variant="ghost">미리보기</Button>
+                    <Button type="button" variant="ghost">
+                      미리보기
+                    </Button>
                   </Link>
                 </div>
               </li>

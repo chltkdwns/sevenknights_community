@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record EnemyTeamMemberRequest(
-        @NotNull(message = "캐릭터를 선택해 주세요.")
-        Long characterId,
+        @NotNull(message = "영웅을 선택해 주세요.")
+        Long heroId,
 
         @NotNull(message = "슬롯 순서를 입력해 주세요.")
         @Min(value = 1, message = "슬롯 순서는 1 이상이어야 합니다.")

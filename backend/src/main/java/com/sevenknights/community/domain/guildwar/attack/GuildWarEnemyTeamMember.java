@@ -1,6 +1,7 @@
 package com.sevenknights.community.domain.guildwar.attack;
 
 import com.sevenknights.community.domain.guildwar.character.GameCharacter;
+import com.sevenknights.community.domain.hero.Hero;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,16 +41,22 @@ public class GuildWarEnemyTeamMember {
     @JoinColumn(name = "enemy_team_id", nullable = false)
     private GuildWarEnemyTeam enemyTeam;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "character_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hero_id")
+    private Hero hero;
+
+    /** 구버전 상대 방어팀 편성. 신규 저장은 hero FK만 쓰고 character_id는 NULL이다. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "character_id", nullable = true)
     private GameCharacter character;
 
     @Column(nullable = false)
     private int slotOrder;
 
     @Builder
-    public GuildWarEnemyTeamMember(GuildWarEnemyTeam enemyTeam, GameCharacter character, int slotOrder) {
+    public GuildWarEnemyTeamMember(GuildWarEnemyTeam enemyTeam, Hero hero, GameCharacter character, int slotOrder) {
         this.enemyTeam = enemyTeam;
+        this.hero = hero;
         this.character = character;
         this.slotOrder = slotOrder;
     }

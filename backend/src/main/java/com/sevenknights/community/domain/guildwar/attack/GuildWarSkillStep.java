@@ -49,8 +49,12 @@ public class GuildWarSkillStep {
     @Column(nullable = false)
     private int stepOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "skill_id", nullable = false)
+    /**
+     * 실제 사용할 스킬 FK. "스킬 사용 X"는 별도 행으로 저장하지 않으며,
+     * 컬럼은 NULL 허용으로 두어 JPA·레거시 데이터와의 호환만 맞춘다.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "skill_id", nullable = true)
     private Skill skill;
 
     @Column(length = 255)
