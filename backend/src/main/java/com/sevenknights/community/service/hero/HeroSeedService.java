@@ -77,15 +77,8 @@ public class HeroSeedService {
         }
     }
 
-    private static final int EXPECTED_HERO_COUNT = 118;
-
+    /** slug·한글명 중복과 이미지 경로 형식만 검사한다. 인원수는 고정하지 않는다. */
     private static void validateSeedRecords(List<HeroSeedRecord> records) {
-        if (records.size() != EXPECTED_HERO_COUNT) {
-            throw new IllegalStateException(
-                    "영웅 시드 파일은 " + EXPECTED_HERO_COUNT + "명이어야 합니다. 현재: " + records.size()
-            );
-        }
-
         Set<String> slugs = new HashSet<>();
         Set<String> names = new HashSet<>();
         for (HeroSeedRecord record : records) {

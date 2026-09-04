@@ -27,6 +27,6 @@ app:
   upload:
     dir: ${UPLOAD_DIR:uploads}
   hero:
-    seed: ${HERO_SEED:false}
+    seed: ${HERO_SEED:true}
   pet:
     seed: ${PET_SEED:false}
