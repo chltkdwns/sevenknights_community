@@ -132,7 +132,7 @@ export function TeamMemberPicker({
                         updateSlot(slot.slotOrder, {
                           equipmentSlots: [
                             ...slot.equipmentSlots,
-                            { key: crypto.randomUUID(), equipmentId: null },
+                            { key: crypto.randomUUID(), equipmentId: null, customName: "" },
                           ],
                         })
                       }
@@ -153,7 +153,29 @@ export function TeamMemberPicker({
                           onChange={(equipmentId) =>
                             updateSlot(slot.slotOrder, {
                               equipmentSlots: slot.equipmentSlots.map((current) =>
-                                current.key === item.key ? { ...current, equipmentId } : current
+                                current.key === item.key
+                                  ? { ...current, equipmentId, customName: "" }
+                                  : current
+                              ),
+                            })
+                          }
+                        />
+                        <Input
+                          id={`${idPrefix}-equipment-custom-${slot.slotOrder}-${item.key}`}
+                          label="직접 입력"
+                          value={item.customName}
+                          placeholder="드롭다운에 없는 장비명"
+                          disabled={item.equipmentId != null}
+                          onChange={(event) =>
+                            updateSlot(slot.slotOrder, {
+                              equipmentSlots: slot.equipmentSlots.map((current) =>
+                                current.key === item.key
+                                  ? {
+                                      ...current,
+                                      equipmentId: null,
+                                      customName: event.target.value,
+                                    }
+                                  : current
                               ),
                             })
                           }
@@ -188,7 +210,7 @@ export function TeamMemberPicker({
                         updateSlot(slot.slotOrder, {
                           ringSlots: [
                             ...slot.ringSlots,
-                            { key: crypto.randomUUID(), ringId: null, enchantment: "" },
+                            { key: crypto.randomUUID(), ringId: null, customName: "", enchantment: "" },
                           ],
                         })
                       }
@@ -209,7 +231,29 @@ export function TeamMemberPicker({
                           onChange={(ringId) =>
                             updateSlot(slot.slotOrder, {
                               ringSlots: slot.ringSlots.map((current) =>
-                                current.key === item.key ? { ...current, ringId } : current
+                                current.key === item.key
+                                  ? { ...current, ringId, customName: "" }
+                                  : current
+                              ),
+                            })
+                          }
+                        />
+                        <Input
+                          id={`${idPrefix}-ring-custom-${slot.slotOrder}-${item.key}`}
+                          label="직접 입력"
+                          value={item.customName}
+                          placeholder="드롭다운에 없는 반지명"
+                          disabled={item.ringId != null}
+                          onChange={(event) =>
+                            updateSlot(slot.slotOrder, {
+                              ringSlots: slot.ringSlots.map((current) =>
+                                current.key === item.key
+                                  ? {
+                                      ...current,
+                                      ringId: null,
+                                      customName: event.target.value,
+                                    }
+                                  : current
                               ),
                             })
                           }

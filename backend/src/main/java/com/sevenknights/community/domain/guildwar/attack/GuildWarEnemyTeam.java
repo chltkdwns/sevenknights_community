@@ -108,4 +108,8 @@ public class GuildWarEnemyTeam {
         this.petName = petName;
         this.petImageUrl = petImageUrl;
     }
+
+    public void updateSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 }

@@ -35,9 +35,13 @@ public class GuildWarAttackMemberRing {
     @JoinColumn(name = "attack_team_member_id", nullable = false)
     private GuildWarAttackTeamMember member;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ring_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ring_id")
     private Ring ring;
+
+    /** 마스터에 없는 반지명. ring FK가 있으면 무시하고 마스터 이름을 쓴다. */
+    @Column(name = "custom_name", length = 80)
+    private String customName;
 
     /** 이 추천안에서만 쓰는 세공 설명. 반지 마스터 옵션이 아님. */
     @Column(length = 255)
@@ -50,11 +54,13 @@ public class GuildWarAttackMemberRing {
     public GuildWarAttackMemberRing(
             GuildWarAttackTeamMember member,
             Ring ring,
+            String customName,
             String enchantment,
             int sortOrder
     ) {
         this.member = member;
         this.ring = ring;
+        this.customName = customName;
         this.enchantment = enchantment;
         this.sortOrder = sortOrder;
     }

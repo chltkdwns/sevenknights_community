@@ -1,5 +1,7 @@
 package com.sevenknights.community.controller;
 
+import com.sevenknights.community.dto.guildwar.attack.EnemyTeamAdminSummaryResponse;
+import com.sevenknights.community.dto.guildwar.attack.EnemyTeamReorderRequest;
 import com.sevenknights.community.dto.guildwar.attack.EnemyTeamUpsertRequest;
 import com.sevenknights.community.global.rests.JSONData;
 import com.sevenknights.community.service.guildwar.EnemyTeamAdminService;
@@ -8,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 공격 가이드 — 상대 방어팀 관리 API.
@@ -30,6 +36,17 @@ public class EnemyTeamAdminController {
 
     private final EnemyTeamAdminService enemyTeamAdminService;
 
+    @GetMapping
+    public JSONData<List<EnemyTeamAdminSummaryResponse>> list() {
+        return JSONData.of(HttpStatus.OK, enemyTeamAdminService.listAllForAdmin());
+    }
+
+    @PutMapping("/reorder")
+    public ResponseEntity<JSONData<Void>> reorder(@Valid @RequestBody EnemyTeamReorderRequest request) {
+        enemyTeamAdminService.reorder(request.orderedIds());
+        return ResponseEntity.ok(JSONData.of(HttpStatus.OK, null));
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public JSONData<Long> save(@Valid @RequestBody EnemyTeamUpsertRequest request) {
@@ -44,5 +61,11 @@ public class EnemyTeamAdminController {
     ) {
         Long updatedId = enemyTeamAdminService.update(id, request);
         return ResponseEntity.ok(JSONData.of(HttpStatus.OK, updatedId));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        enemyTeamAdminService.delete(id);
     }
 }

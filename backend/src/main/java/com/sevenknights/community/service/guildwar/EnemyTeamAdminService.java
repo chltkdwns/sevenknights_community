@@ -18,9 +18,11 @@ import com.sevenknights.community.domain.guildwar.master.RingRepository;
 import com.sevenknights.community.domain.hero.Hero;
 import com.sevenknights.community.domain.hero.HeroRepository;
 import com.sevenknights.community.domain.pet.PetCatalogRepository;
+import com.sevenknights.community.dto.guildwar.attack.AttackMemberEquipmentRequest;
 import com.sevenknights.community.dto.guildwar.attack.AttackMemberRingRequest;
 import com.sevenknights.community.dto.guildwar.attack.AttackRecommendationRequest;
 import com.sevenknights.community.dto.guildwar.attack.AttackTeamMemberRequest;
+import com.sevenknights.community.dto.guildwar.attack.EnemyTeamAdminSummaryResponse;
 import com.sevenknights.community.dto.guildwar.attack.EnemyTeamMemberRequest;
 import com.sevenknights.community.dto.guildwar.attack.EnemyTeamUpsertRequest;
 import com.sevenknights.community.dto.guildwar.attack.SkillStepRequest;
@@ -78,7 +80,7 @@ public class EnemyTeamAdminService {
         GuildWarEnemyTeam team = GuildWarEnemyTeam.builder()
                 .title(request.title())
                 .memo(request.memo())
-                .sortOrder(request.sortOrder())
+                .sortOrder(nextSortOrder())
                 .isPublished(request.isPublished())
                 .petName(request.petName())
                 .petImageUrl(request.petImageUrl())
@@ -106,7 +108,7 @@ public class EnemyTeamAdminService {
         team.update(
                 request.title(),
                 request.memo(),
-                request.sortOrder(),
+                team.getSortOrder(),
                 request.isPublished(),
                 request.petName(),
                 request.petImageUrl()
@@ -123,6 +125,68 @@ public class EnemyTeamAdminService {
         applyRecommendations(team, request.recommendations(), heroMap, skillMap, catalogPetMap, equipmentMap, ringMap);
 
         return team.getId();
+    }
+
+    /**
+     * 방어팀 Aggregate 전체 삭제.
+     * members·recommendations는 cascade orphanRemoval로 하위(공격팀·스킬·장비·반지·펫 조인)까지 함께 제거한다.
+     */
+    @Transactional
+    public void delete(Long id) {
+        GuildWarEnemyTeam team = enemyTeamRepository.findByIdWithMembers(id)
+                .orElseThrow(() -> new NotFoundException("상대 방어팀을 찾을 수 없습니다."));
+        team.getRecommendations().clear();
+        team.getMembers().clear();
+        entityManager.flush();
+        enemyTeamRepository.delete(team);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnemyTeamAdminSummaryResponse> listAllForAdmin() {
+        return enemyTeamRepository.findAllWithMembersOrderBySortOrderAsc().stream()
+                .map(EnemyTeamAdminSummaryResponse::from)
+                .toList();
+    }
+
+    /**
+     * 관리자 목록 드래그 앤 드롭 — 방어팀 {@code sortOrder}만 갱신한다.
+     * 하위 추천 공격팀·편성 데이터는 건드리지 않는다.
+     */
+    @Transactional
+    public void reorder(List<Long> orderedIds) {
+        if (orderedIds == null || orderedIds.isEmpty()) {
+            throw new BadRequestException("정렬할 방어팀 목록이 비어 있습니다.");
+        }
+
+        long distinctCount = orderedIds.stream().distinct().count();
+        if (distinctCount != orderedIds.size()) {
+            throw new BadRequestException("중복된 방어팀이 포함되어 있습니다.");
+        }
+
+        List<GuildWarEnemyTeam> allTeams = enemyTeamRepository.findAllByOrderBySortOrderAsc();
+        if (allTeams.size() != orderedIds.size()) {
+            throw new BadRequestException("모든 방어팀의 순서를 지정해야 합니다.");
+        }
+
+        Map<Long, GuildWarEnemyTeam> teamById = allTeams.stream()
+                .collect(Collectors.toMap(GuildWarEnemyTeam::getId, Function.identity()));
+
+        for (Long orderedId : orderedIds) {
+            if (!teamById.containsKey(orderedId)) {
+                throw new BadRequestException("존재하지 않는 방어팀이 포함되어 있습니다.");
+            }
+        }
+
+        for (int index = 0; index < orderedIds.size(); index++) {
+            teamById.get(orderedIds.get(index)).updateSortOrder(index);
+        }
+    }
+
+    private int nextSortOrder() {
+        return enemyTeamRepository.findAllByOrderBySortOrderAsc().stream()
+                .mapToInt(GuildWarEnemyTeam::getSortOrder)
+                .max()
+                .orElse(-1) + 1;
     }
 
     private void validateRequest(EnemyTeamUpsertRequest request) {
@@ -155,8 +219,20 @@ public class EnemyTeamAdminService {
 
             recommendation.attackTeamMembers().forEach(member -> {
                 heroIds.add(member.heroId());
-                equipmentIds(member).forEach(equipmentIds::add);
-                rings(member).forEach(ring -> ringIds.add(ring.ringId()));
+                equipments(member).forEach(equipment -> {
+                    if (equipment.equipmentId() != null) {
+                        equipmentIds.add(equipment.equipmentId());
+                    } else if (!isNotBlank(equipment.customName())) {
+                        throw new BadRequestException("추천 장비를 선택하거나 직접 입력해 주세요.");
+                    }
+                });
+                rings(member).forEach(ring -> {
+                    if (ring.ringId() != null) {
+                        ringIds.add(ring.ringId());
+                    } else if (!isNotBlank(ring.customName())) {
+                        throw new BadRequestException("추천 반지를 선택하거나 직접 입력해 주세요.");
+                    }
+                });
             });
             recommendation.skillSteps().forEach(step -> {
                 if (step.skillId() != null) {
@@ -276,7 +352,12 @@ public class EnemyTeamAdminService {
     private Set<Long> collectEquipmentIds(EnemyTeamUpsertRequest request) {
         Set<Long> equipmentIds = new HashSet<>();
         request.recommendations().forEach(recommendation ->
-                recommendation.attackTeamMembers().forEach(member -> equipmentIds.addAll(equipmentIds(member)))
+                recommendation.attackTeamMembers().forEach(member ->
+                        equipments(member).stream()
+                                .map(AttackMemberEquipmentRequest::equipmentId)
+                                .filter(Objects::nonNull)
+                                .forEach(equipmentIds::add)
+                )
         );
         return equipmentIds;
     }
@@ -285,7 +366,10 @@ public class EnemyTeamAdminService {
         Set<Long> ringIds = new HashSet<>();
         request.recommendations().forEach(recommendation ->
                 recommendation.attackTeamMembers().forEach(member ->
-                        rings(member).forEach(ring -> ringIds.add(ring.ringId()))
+                        rings(member).stream()
+                                .map(AttackMemberRingRequest::ringId)
+                                .filter(Objects::nonNull)
+                                .forEach(ringIds::add)
                 )
         );
         return ringIds;
@@ -376,19 +460,40 @@ public class EnemyTeamAdminService {
 
                 // 멤버 행이 먼저 persist 대상이 된 뒤에 자식 장비/반지를 붙인다. 이름·이미지는 저장하지 않는다.
                 int equipmentOrder = 1;
-                for (Long equipmentId : equipmentIds(memberRequest)) {
+                for (AttackMemberEquipmentRequest equipmentRequest : equipments(memberRequest)) {
+                    if (equipmentRequest.equipmentId() != null) {
+                        member.getEquipments().add(GuildWarAttackMemberEquipment.builder()
+                                .member(member)
+                                .equipment(equipmentMap.get(equipmentRequest.equipmentId()))
+                                .customName(null)
+                                .sortOrder(equipmentOrder++)
+                                .build());
+                        continue;
+                    }
                     member.getEquipments().add(GuildWarAttackMemberEquipment.builder()
                             .member(member)
-                            .equipment(equipmentMap.get(equipmentId))
+                            .equipment(null)
+                            .customName(blankToNull(equipmentRequest.customName()))
                             .sortOrder(equipmentOrder++)
                             .build());
                 }
 
                 int ringOrder = 1;
                 for (AttackMemberRingRequest ringRequest : rings(memberRequest)) {
+                    if (ringRequest.ringId() != null) {
+                        member.getRings().add(GuildWarAttackMemberRing.builder()
+                                .member(member)
+                                .ring(ringMap.get(ringRequest.ringId()))
+                                .customName(null)
+                                .enchantment(blankToNull(ringRequest.enchantment()))
+                                .sortOrder(ringOrder++)
+                                .build());
+                        continue;
+                    }
                     member.getRings().add(GuildWarAttackMemberRing.builder()
                             .member(member)
-                            .ring(ringMap.get(ringRequest.ringId()))
+                            .ring(null)
+                            .customName(blankToNull(ringRequest.customName()))
                             .enchantment(blankToNull(ringRequest.enchantment()))
                             .sortOrder(ringOrder++)
                             .build());
@@ -423,18 +528,24 @@ public class EnemyTeamAdminService {
         }
     }
 
-    private static List<Long> equipmentIds(AttackTeamMemberRequest member) {
-        if (member.equipmentIds() == null) {
+    private static List<AttackMemberEquipmentRequest> equipments(AttackTeamMemberRequest member) {
+        if (member.equipments() == null) {
             return List.of();
         }
-        return member.equipmentIds().stream().filter(Objects::nonNull).toList();
+        return member.equipments().stream()
+                .filter(Objects::nonNull)
+                .filter(equipment -> equipment.equipmentId() != null || isNotBlank(equipment.customName()))
+                .toList();
     }
 
     private static List<AttackMemberRingRequest> rings(AttackTeamMemberRequest member) {
         if (member.rings() == null) {
             return List.of();
         }
-        return member.rings().stream().filter(ring -> ring != null && ring.ringId() != null).toList();
+        return member.rings().stream()
+                .filter(Objects::nonNull)
+                .filter(ring -> ring.ringId() != null || isNotBlank(ring.customName()))
+                .toList();
     }
 
     private static String blankToNull(String value) {

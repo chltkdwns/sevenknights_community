@@ -35,9 +35,13 @@ public class GuildWarAttackMemberEquipment {
     @JoinColumn(name = "attack_team_member_id", nullable = false)
     private GuildWarAttackTeamMember member;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "equipment_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "equipment_id")
     private Equipment equipment;
+
+    /** 마스터에 없는 장비명. equipment FK가 있으면 무시하고 마스터 이름을 쓴다. */
+    @Column(name = "custom_name", length = 80)
+    private String customName;
 
     @Column(nullable = false)
     private int sortOrder;
@@ -46,10 +50,12 @@ public class GuildWarAttackMemberEquipment {
     public GuildWarAttackMemberEquipment(
             GuildWarAttackTeamMember member,
             Equipment equipment,
+            String customName,
             int sortOrder
     ) {
         this.member = member;
         this.equipment = equipment;
+        this.customName = customName;
         this.sortOrder = sortOrder;
     }
 }

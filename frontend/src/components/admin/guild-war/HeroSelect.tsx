@@ -66,7 +66,7 @@ export function HeroSelect({ label, value, heroes, onChange }: HeroSelectProps) 
         className="flex items-center justify-between rounded-lg border border-border bg-input-bg px-3 py-2 text-left text-sm outline-none transition focus:border-accent"
       >
         <span className={selected ? "text-foreground" : "text-muted"}>
-          {selected ? `${selected.name} (${selected.faction})` : "영웅 선택"}
+          {selected ? selected.name : "영웅 선택"}
         </span>
         <span className="text-muted" aria-hidden>
           {open ? "▲" : "▼"}
@@ -118,7 +118,6 @@ export function HeroSelect({ label, value, heroes, onChange }: HeroSelectProps) 
                     }`}
                   >
                     {hero.name}
-                    <span className="ml-1 text-xs text-muted">({hero.faction})</span>
                   </button>
                 </li>
               ))
@@ -138,7 +137,6 @@ export function HeroSelect({ label, value, heroes, onChange }: HeroSelectProps) 
               characterImageUrl: selected.imageUrl,
             }}
           />
-          <span className="text-xs text-muted">{selected.faction}</span>
         </div>
       ) : null}
     </div>

@@ -19,10 +19,11 @@ public record AttackTeamMemberRequest(
         /** 없으면 공개 UI에서 설명 영역을 숨긴다. */
         String description,
 
-        /** 선택한 장비 마스터 ID 목록. 비어 있으면 장비 없음. */
-        List<Long> equipmentIds,
+        /** 장비 마스터 선택 또는 직접 입력. 비어 있으면 장비 없음. */
+        @Valid
+        List<AttackMemberEquipmentRequest> equipments,
 
-        /** 반지 ID + 세공 문자열. 반지 이름/이미지는 보내지 않는다. */
+        /** 반지 마스터 선택·직접 입력 + 세공 문자열. */
         @Valid
         List<AttackMemberRingRequest> rings
 ) {

@@ -173,13 +173,6 @@ export function EnemyTeamForm({
           onChange={(event) => updateForm({ title: event.target.value })}
           required
         />
-        <Input
-          label="정렬 순서"
-          type="number"
-          min={0}
-          value={form.sortOrder}
-          onChange={(event) => updateForm({ sortOrder: Number(event.target.value) || 0 })}
-        />
       </div>
 
       <label className="flex flex-col gap-1.5 text-sm">
@@ -213,12 +206,7 @@ export function EnemyTeamForm({
       </div>
 
       <div>
-        <div className="mb-4 flex items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold">추천 공격팀</h2>
-          <Button type="button" variant="secondary" onClick={addRecommendation}>
-            추천팀 추가
-          </Button>
-        </div>
+        <h2 className="mb-4 text-lg font-semibold">추천 공격팀</h2>
 
         {form.recommendations.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted">
@@ -245,6 +233,12 @@ export function EnemyTeamForm({
             ))}
           </div>
         )}
+
+        <div className="mt-4 flex justify-end">
+          <Button type="button" variant="secondary" onClick={addRecommendation}>
+            추천팀 추가
+          </Button>
+        </div>
       </div>
 
       {successMessage ? <p className="text-sm text-accent">{successMessage}</p> : null}

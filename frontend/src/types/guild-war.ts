@@ -140,9 +140,8 @@ export interface AttackTeamMemberUpsert {
   heroId: number;
   slotOrder: number;
   description: string | null;
-  equipmentIds: number[];
-  /** 반지 마스터 ID + 세공 문자열. 반지 이름/이미지는 보내지 않는다. */
-  rings: { ringId: number; enchantment: string | null }[];
+  equipments: { equipmentId: number | null; customName: string | null }[];
+  rings: { ringId: number | null; customName: string | null; enchantment: string | null }[];
 }
 
 export interface SkillStepUpsert {
@@ -160,6 +159,14 @@ export interface AttackRecommendationUpsert {
   petIds: number[];
   attackTeamMembers: AttackTeamMemberUpsert[];
   skillSteps: SkillStepUpsert[];
+}
+
+export interface EnemyTeamAdminSummary {
+  id: number;
+  title: string;
+  sortOrder: number;
+  isPublished: boolean;
+  memberCount: number;
 }
 
 export interface EnemyTeamUpsertRequest {

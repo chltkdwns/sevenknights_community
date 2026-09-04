@@ -36,11 +36,17 @@ public record AttackTeamMemberResponse(
             List<GuildWarAttackMemberRing> memberRings
     ) {
         List<AttackLoadoutItemResponse> equipments = memberEquipments.stream()
-                .map(item -> new AttackLoadoutItemResponse(
-                        item.getEquipment().getId(),
-                        item.getEquipment().getName(),
-                        item.getEquipment().getImageUrl()
-                ))
+                .map(item -> {
+                    if (item.getEquipment() != null) {
+                        return new AttackLoadoutItemResponse(
+                                item.getEquipment().getId(),
+                                item.getEquipment().getName(),
+                                item.getEquipment().getImageUrl()
+                        );
+                    }
+                    return new AttackLoadoutItemResponse(null, item.getCustomName(), null);
+                })
+                .filter(item -> !isBlank(item.name()))
                 .toList();
         // 조인 테이블이 비어 있으면 예전 멤버 컬럼(이름·URL 한 세트)으로 공개 화면을 채운다.
         if (equipments.isEmpty()) {
@@ -48,12 +54,18 @@ public record AttackTeamMemberResponse(
         }
 
         List<AttackRingLoadoutResponse> rings = memberRings.stream()
-                .map(item -> new AttackRingLoadoutResponse(
-                        item.getRing().getId(),
-                        item.getRing().getName(),
-                        item.getRing().getImageUrl(),
-                        item.getEnchantment()
-                ))
+                .map(item -> {
+                    if (item.getRing() != null) {
+                        return new AttackRingLoadoutResponse(
+                                item.getRing().getId(),
+                                item.getRing().getName(),
+                                item.getRing().getImageUrl(),
+                                item.getEnchantment()
+                        );
+                    }
+                    return new AttackRingLoadoutResponse(null, item.getCustomName(), null, item.getEnchantment());
+                })
+                .filter(item -> !isBlank(item.name()) || !isBlank(item.enchantment()))
                 .toList();
         if (rings.isEmpty()) {
             rings = legacyRings(member);
