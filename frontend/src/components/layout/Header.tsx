@@ -26,7 +26,8 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-6">
           <Link href="/" className="shrink-0 text-lg font-bold tracking-tight text-accent">
-            Seven Knights
+            {/* 사이트 표시명 — 나중에 원하는 이름으로 바꾸기 쉬운 위치 */}
+            세나 젤리
           </Link>
           <nav className="hidden items-center gap-4 sm:flex">
             <span className="text-xs font-semibold text-muted">{GUIDE_NAV.label}</span>

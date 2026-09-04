@@ -79,7 +79,8 @@ export function GuildWarEnemyTeamSidebar({ selectedTeamId }: GuildWarEnemyTeamSi
   const list = (
     <>
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-semibold">상대 캐릭터 검색</span>
+        {/* 섹션 제목(상대 방어팀)과 '상대'가 겹치지 않도록 검색 라벨만 짧게 */}
+        <span className="font-semibold">캐릭터 검색</span>
         <input
           type="search"
           value={query}
