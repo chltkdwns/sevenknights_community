@@ -1,0 +1,13 @@
+.gradle
+build
+target
+uploads
+uploads-test
+*.md
+.git
+.gitignore
+.idea
+*.iml
+.vscode
+**/bin
+**/.DS_Store
