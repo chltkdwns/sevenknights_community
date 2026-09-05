@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { MobileNavProvider } from "@/components/layout/MobileNavProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
@@ -32,11 +33,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
+      <body className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground antialiased">
         <ThemeProvider>
-          <Header />
-          <AppShell>{children}</AppShell>
-          <Footer />
+          <MobileNavProvider>
+            <Header />
+            <AppShell>{children}</AppShell>
+            <Footer />
+          </MobileNavProvider>
         </ThemeProvider>
       </body>
     </html>

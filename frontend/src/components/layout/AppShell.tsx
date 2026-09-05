@@ -15,7 +15,7 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div
-      className={`mx-auto flex w-full flex-1 gap-6 px-4 py-8 sm:px-6 ${
+      className={`mx-auto flex w-full min-w-0 flex-1 gap-6 overflow-x-hidden px-4 py-8 sm:px-6 ${
         wideContent ? "max-w-7xl" : "max-w-6xl"
       }`}
     >

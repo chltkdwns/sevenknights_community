@@ -127,7 +127,8 @@ export function GuildWarEnemyTeamSidebar({ selectedTeamId }: GuildWarEnemyTeamSi
         </div>
       </aside>
 
-      <div className="xl:hidden">
+      {/* 모바일에서는 우측 패널을 숨기고, md~xl 구간 기존 버튼은 유지한다. */}
+      <div className="hidden md:block xl:hidden">
         <button
           type="button"
           onClick={() => setOpen(true)}
