@@ -46,7 +46,8 @@ export function Header() {
             href="/"
             className="whitespace-nowrap text-lg font-bold tracking-tight text-accent md:shrink-0"
           >
-            Seven Knights
+            {/* 사이트 표시명 — 나중에 원하는 이름으로 바꾸기 쉬운 위치 */}
+            세나 젤리
           </Link>
           <nav className="hidden items-center gap-4 md:flex">
             <span className="text-xs font-semibold text-muted">{GUIDE_NAV.label}</span>

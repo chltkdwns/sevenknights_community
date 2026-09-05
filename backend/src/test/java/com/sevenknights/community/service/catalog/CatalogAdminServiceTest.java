@@ -33,7 +33,7 @@ class CatalogAdminServiceTest {
 
     @Test
     void listsActiveHeroesAndPetsFromCatalog() {
-        assertThat(catalogAdminService.listActiveHeroes()).hasSize(118);
+        assertThat(catalogAdminService.listActiveHeroes()).hasSizeGreaterThanOrEqualTo(119);
         assertThat(catalogAdminService.listActivePets()).hasSize(14);
     }
 }

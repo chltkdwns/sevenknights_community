@@ -706,5 +706,11 @@
         "name":  "에스파다",
         "faction":  "holy_cross_crusaders",
         "imageUrl":  "/images/heroes/holy_cross_crusaders/espada/espada.webp"
+    },
+    {
+        "slug":  "hayeon",
+        "name":  "하연",
+        "faction":  "guardian_of_the_boundary",
+        "imageUrl":  "/images/heroes/guardian_of_the_boundary/hayeon/hayeon.webp"
     }
 ]

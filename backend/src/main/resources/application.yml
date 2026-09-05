@@ -22,10 +22,11 @@ app:
     secret: ${JWT_SECRET}
     expiration-ms: 86400000
   cors:
-    allowed-origins: http://localhost:3000
+    # EC2 등에서는 브라우저 origin(예: http://EC2_IP:3000)을 env로 주입한다. 로컬 기본값은 유지.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
   upload:
     dir: ${UPLOAD_DIR:uploads}
   hero:
-    seed: ${HERO_SEED:false}
+    seed: ${HERO_SEED:true}
   pet:
     seed: ${PET_SEED:false}

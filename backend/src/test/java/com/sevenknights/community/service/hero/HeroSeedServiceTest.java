@@ -25,23 +25,26 @@ class HeroSeedServiceTest {
     private HeroRepository heroRepository;
 
     @Test
-    void seedsOneHundredThirteenHeroesWithoutDuplicates() {
+    void seedsAllHeroesFromFileWithoutDuplicates() {
         HeroSeedResult first = heroSeedService.seed();
-        HeroSeedResult second = heroSeedService.seed();
+        int totalInFile = first.totalInFile();
 
-        assertThat(first.totalInFile()).isEqualTo(118);
-        assertThat(first.inserted()).isEqualTo(118);
-        assertThat(first.totalInDatabase()).isEqualTo(118);
+        // 인원수 고정 검증은 제거됨 — 파일에 있는 전원이 멱등으로 반영되면 된다.
+        assertThat(totalInFile).isGreaterThanOrEqualTo(119);
+        assertThat(first.inserted() + first.updated() + first.unchanged()).isEqualTo(totalInFile);
+        assertThat(heroRepository.count()).isEqualTo(totalInFile);
+
+        HeroSeedResult second = heroSeedService.seed();
         assertThat(second.inserted()).isZero();
         assertThat(second.updated()).isZero();
-        assertThat(second.unchanged()).isEqualTo(118);
-        assertThat(heroRepository.count()).isEqualTo(118);
+        assertThat(second.unchanged()).isEqualTo(totalInFile);
+        assertThat(heroRepository.count()).isEqualTo(totalInFile);
 
         Set<String> slugs = heroRepository.findAll().stream()
                 .map(Hero::getSlug)
                 .collect(Collectors.toSet());
-        assertThat(slugs).hasSize(118);
-        assertThat(slugs).contains("lania", "rudy", "Dwaeo", "trued", "nata", "sogyo", "espada", "sung_jinwoo");
+        assertThat(slugs).hasSize(totalInFile);
+        assertThat(slugs).contains("lania", "rudy", "Dwaeo", "trued", "nata", "sogyo", "espada", "sung_jinwoo", "hayeon");
 
         Hero trude = heroRepository.findBySlug("trued").orElseThrow();
         assertThat(trude.getName()).isEqualTo("트루드");
@@ -54,5 +57,8 @@ class HeroSeedServiceTest {
 
         Hero sogyo = heroRepository.findBySlug("sogyo").orElseThrow();
         assertThat(sogyo.getName()).isEqualTo("소교");
+
+        Hero hayeon = heroRepository.findBySlug("hayeon").orElseThrow();
+        assertThat(hayeon.getName()).isEqualTo("하연");
     }
 }

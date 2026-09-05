@@ -18,8 +18,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Seven Knights Community",
+  // 브라우저 탭 제목 (사이트 표시명과 동일하게 유지)
+  title: "세나 젤리",
   description: "세븐나이츠 커뮤니티 — 공략·자유 게시판",
+  // 탭 아이콘은 app/icon.png 파일 컨벤션으로 적용. 여기에 icons를 또 넣지 않는다.
 };
 
 export default function RootLayout({
