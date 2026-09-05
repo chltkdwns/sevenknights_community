@@ -21,7 +21,8 @@ export default function GuildWarAttackDetailPage() {
       setError("");
       try {
         const data = await apiRequest<EnemyTeamDetail>(
-          `/api/guild-war/attack/enemy-teams/${id}`
+          `/api/guild-war/attack/enemy-teams/${id}`,
+          { auth: true }
         );
         setTeam(data);
       } catch {

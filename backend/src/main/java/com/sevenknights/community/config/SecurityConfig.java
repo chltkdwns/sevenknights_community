@@ -70,8 +70,8 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         // AntPath로 고정 — MvcRequestMatcher는 핸들러 미등록 시 /api/admin/** 가 누락될 수 있다.
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
-                        // 길드전 가이드 공개 조회 — isPublished 필터는 서비스·리포지토리에서 적용
-                        .requestMatchers(HttpMethod.GET, "/api/guild-war/**").permitAll()
+                        // 길드전 공격 가이드는 승인된 길드원(MEMBER)과 관리자만 조회한다. USER·비로그인은 불가.
+                        .requestMatchers("/api/guild-war/**").hasAnyRole("MEMBER", "ADMIN")
                         // /api/admin/posts/** 와 분리하기 위해 /api/posts/** 만 AntPath로 한정
                         .requestMatchers(new AntPathRequestMatcher("/api/posts/**", "GET")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/posts/**", "POST")).authenticated()

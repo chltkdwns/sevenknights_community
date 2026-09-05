@@ -48,4 +48,9 @@ public class User {
         this.nickname = nickname;
         this.role = role;
     }
+
+    /** 관리자가 길드원 승인(USER→MEMBER) 또는 취소(MEMBER→USER)할 때 사용한다. */
+    public void changeRole(Role role) {
+        this.role = role;
+    }
 }

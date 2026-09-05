@@ -22,10 +22,10 @@ export default function EditGuildWarAttackPage() {
       setLoading(true);
       setError("");
       try {
-        // 공개 조회 API — Authorization을 붙이지 않는다.
-        // auth: true로 부르면 401 시 api.ts가 localStorage를 비워 헤더가 로그아웃으로 바뀐다.
+        // MEMBER·ADMIN만 조회 가능한 API라 관리자 토큰을 붙인다.
         const data = await apiRequest<EnemyTeamDetail>(
-          `/api/guild-war/attack/enemy-teams/${id}`
+          `/api/guild-war/attack/enemy-teams/${id}`,
+          { auth: true }
         );
         setTeam(data);
       } catch {

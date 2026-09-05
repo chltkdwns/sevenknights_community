@@ -10,7 +10,7 @@ export default function SignupPage() {
     <GuestOnly>
       <AuthFormCard
         title="회원가입"
-        description="커뮤니티 계정을 생성합니다. 모든 항목을 올바르게 입력해야 가입할 수 있습니다."
+        description="커뮤니티 계정을 생성합니다. 가입 후 관리자 승인이 있어야 길드전 공략을 볼 수 있습니다."
         footer={
           <p className="text-center text-sm text-muted">
             이미 계정이 있으신가요?{" "}

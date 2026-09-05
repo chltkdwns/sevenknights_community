@@ -39,6 +39,7 @@ public class AuthService {
         }
 
         // 비밀번호는 반드시 해시(BCrypt)로 저장한다.
+        // 신규 가입은 미승인 USER. 길드전 공략은 관리자가 MEMBER로 올린 뒤에만 볼 수 있다.
         User user = User.builder()
                 .username(request.username())
                 .email(request.email())

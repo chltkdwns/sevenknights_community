@@ -49,6 +49,11 @@ export function isAdminUser(): boolean {
   return !!token && !!user && user.role === "ADMIN";
 }
 
+/** 길드전 공격 가이드는 승인된 길드원(MEMBER)과 관리자만 볼 수 있다. */
+export function canAccessGuildWarGuide(user: User | null): boolean {
+  return !!user && (user.role === "MEMBER" || user.role === "ADMIN");
+}
+
 export function getAuthChangedEventName(): string {
   return AUTH_CHANGED_EVENT;
 }

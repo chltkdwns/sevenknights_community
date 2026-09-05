@@ -1,5 +1,6 @@
 package com.sevenknights.community.controller;
 
+import com.sevenknights.community.dto.auth.UpdateUserRoleRequest;
 import com.sevenknights.community.dto.auth.UserResponse;
 import com.sevenknights.community.dto.common.PageResponse;
 import com.sevenknights.community.dto.post.PostSummaryResponse;
@@ -35,6 +36,15 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<JSONData<List<UserResponse>>> users() {
         return ResponseEntity.ok(JSONData.of(HttpStatus.OK, adminService.getUsers()));
+    }
+
+    @PutMapping("/users/{id}/role")
+    public ResponseEntity<JSONData<UserResponse>> updateUserRole(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRoleRequest request
+    ) {
+        UserResponse updated = adminService.updateGuildRole(id, request.role());
+        return ResponseEntity.ok(JSONData.of(HttpStatus.OK, updated));
     }
 
     @GetMapping("/posts")

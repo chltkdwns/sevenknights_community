@@ -34,7 +34,8 @@ export function GuildWarAttackPreviewModal({
       setError("");
       try {
         const data = await apiRequest<EnemyTeamDetail>(
-          `/api/guild-war/attack/enemy-teams/${teamId}`
+          `/api/guild-war/attack/enemy-teams/${teamId}`,
+          { auth: true }
         );
         setTeam(data);
       } catch (err) {

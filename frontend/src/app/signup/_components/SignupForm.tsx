@@ -75,15 +75,19 @@ export default function SignupForm({
         autoComplete="email"
         required
       />
-      <Input
-        label="닉네임"
-        value={form.nickname}
-        onChange={(e) => onChange("nickname", e.target.value)}
-        onBlur={() => onBlur("nickname")}
-        error={errors.nickname}
-        autoComplete="nickname"
-        required
-      />
+
+      <div className="flex flex-col gap-1.5">
+        <Input
+          label="닉네임"
+          value={form.nickname}
+          onChange={(e) => onChange("nickname", e.target.value)}
+          onBlur={() => onBlur("nickname")}
+          error={errors.nickname}
+          autoComplete="nickname"
+          required
+        />
+        <p className="text-xs text-muted">게임 닉네임으로 가입하셔야 조회 가능합니다.</p>
+      </div>
       <PasswordInput
         label="비밀번호"
         value={form.password}

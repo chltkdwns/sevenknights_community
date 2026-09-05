@@ -3,12 +3,15 @@
 import { useParams } from "next/navigation";
 import { GuildWarAttackProvider } from "@/components/guild-war/GuildWarAttackProvider";
 import { GuildWarEnemyTeamSidebar } from "@/components/guild-war/GuildWarEnemyTeamSidebar";
+import { GuildWarGuideGuard } from "@/components/guild-war/GuildWarGuideGuard";
 
 export default function GuildWarAttackLayout({ children }: { children: React.ReactNode }) {
   return (
-    <GuildWarAttackProvider>
-      <GuildWarAttackShell>{children}</GuildWarAttackShell>
-    </GuildWarAttackProvider>
+    <GuildWarGuideGuard>
+      <GuildWarAttackProvider>
+        <GuildWarAttackShell>{children}</GuildWarAttackShell>
+      </GuildWarAttackProvider>
+    </GuildWarGuideGuard>
   );
 }
 

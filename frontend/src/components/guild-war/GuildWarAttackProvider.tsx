@@ -24,7 +24,9 @@ export function GuildWarAttackProvider({ children }: { children: React.ReactNode
       setLoading(true);
       setError("");
       try {
-        const data = await apiRequest<EnemyTeamSummary[]>("/api/guild-war/attack/enemy-teams");
+        const data = await apiRequest<EnemyTeamSummary[]>("/api/guild-war/attack/enemy-teams", {
+          auth: true,
+        });
         if (!cancelled) {
           setTeams(data);
         }
